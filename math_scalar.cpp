@@ -1463,5 +1463,3 @@ inline q4 Q4FacingDirection(f32 Angle)
 
     return Result;
 }
-
-#include "rosemary_math_simd.cpp"

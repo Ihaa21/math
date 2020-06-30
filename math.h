@@ -2,9 +2,10 @@
 
 // TODO: Remove
 #include <math.h>
+#include "types.h"
 
-#define MATH_X64
-//#define MATH_ARM
+#define MATH_X64 1
+//#define MATH_ARM 1
 
 //
 // NOTE: Constants
@@ -27,17 +28,6 @@ union v2
     f32 e[2];
 };
 
-union v2_soa
-{
-    struct
-    {
-        f32* x;
-        f32* y;
-    };
-
-    f32* e[2];
-};
-
 union v2i
 {
     struct
@@ -46,17 +36,6 @@ union v2i
     };
 
     i32 e[2];
-};
-
-union v2i_soa
-{
-    struct
-    {
-        i32* x;
-        i32* y;
-    };
-
-    i32* e[2];
 };
 
 union v3
@@ -84,37 +63,6 @@ union v3
     };
 
     f32 e[3];
-};    
-
-union v3_soa
-{
-    struct
-    {
-        f32* x;
-        f32* y;
-        f32* z;        
-    };
-        
-    struct
-    {
-        v2_soa xy;
-        f32* Ignored0_;
-    };
-
-    struct
-    {
-        f32* Ignored1_;
-        v2_soa yz;
-    };
-
-    struct
-    {
-        f32* r;
-        f32* g;
-        f32* b;
-    };
-
-    f32* e[3];
 };    
 
 union v4
@@ -184,6 +132,161 @@ union v4u
     u32 e[4];
 };
 
+// NOTE: Planes
+
+union p3
+{
+    struct
+    {
+        v3 Normal;
+        f32 d;
+    };
+};
+
+// NOTE: Matrices are stored column order
+union m2
+{
+    struct
+    {
+        f32 e[4];
+    };
+
+    struct
+    {
+        v2 v[2];
+    };
+};
+
+// NOTE: Matrices are stored column order
+union m3
+{
+    struct
+    {
+        f32 e[12];
+    };
+    
+    struct
+    {
+        v3 v[3];
+    };
+};
+
+// NOTE: Matrices are stored column order
+union m4
+{
+    struct
+    {
+        f32 e[16];
+    };
+
+    struct
+    {
+        v4 v[4];
+    };
+};
+
+union q4
+{
+    struct
+    {
+        f32 x, y, z, w;
+    };
+    
+    struct
+    {
+        v3 xyz;
+        f32 Ignored0_;
+    };
+};
+
+struct aabb2
+{
+    v2 Min;
+    v2 Max;
+};
+
+struct aabb2i
+{
+    v2i Min;
+    v2i Max;
+};
+
+struct aabb3
+{
+    v3 Min;
+    v3 Max;
+};
+
+struct ray_cast
+{
+    i16 NumGridsToVisit;
+    i16 CurrX;
+    i16 CurrY;
+    i16 IncX;
+    i16 IncY;
+    f32 t;
+    f32 NextVert;
+    f32 NextHoriz;
+    v2 DeltaRecip;
+};
+
+//
+// NOTE: SOA
+//
+
+union v2_soa
+{
+    struct
+    {
+        f32* x;
+        f32* y;
+    };
+
+    f32* e[2];
+};
+
+union v2i_soa
+{
+    struct
+    {
+        i32* x;
+        i32* y;
+    };
+
+    i32* e[2];
+};
+
+union v3_soa
+{
+    struct
+    {
+        f32* x;
+        f32* y;
+        f32* z;        
+    };
+        
+    struct
+    {
+        v2_soa xy;
+        f32* Ignored0_;
+    };
+
+    struct
+    {
+        f32* Ignored1_;
+        v2_soa yz;
+    };
+
+    struct
+    {
+        f32* r;
+        f32* g;
+        f32* b;
+    };
+
+    f32* e[3];
+};    
+
 union v4_soa
 {
     struct
@@ -229,31 +332,6 @@ union v4_soa
     f32* e[4];
 };
 
-// NOTE: Planes
-
-union p3
-{
-    struct
-    {
-        v3 Normal;
-        f32 d;
-    };
-};
-
-// NOTE: Matrices are stored column order
-union m2
-{
-    struct
-    {
-        f32 e[4];
-    };
-
-    struct
-    {
-        v2 v[2];
-    };
-};
-
 union m2_soa
 {
     struct
@@ -264,20 +342,6 @@ union m2_soa
     struct
     {
         v2_soa v[2];
-    };
-};
-
-// NOTE: Matrices are stored column order
-union m3
-{
-    struct
-    {
-        f32 e[12];
-    };
-    
-    struct
-    {
-        v3 v[3];
     };
 };
 
@@ -294,20 +358,6 @@ union m3_soa
     };
 };
 
-// NOTE: Matrices are stored column order
-union m4
-{
-    struct
-    {
-        f32 e[16];
-    };
-
-    struct
-    {
-        v4 v[4];
-    };
-};
-
 union m4_soa
 {
     struct
@@ -318,20 +368,6 @@ union m4_soa
     struct
     {
         v4_soa v[4];
-    };
-};
-
-union q4
-{
-    struct
-    {
-        f32 x, y, z, w;
-    };
-    
-    struct
-    {
-        v3 xyz;
-        f32 Ignored0_;
     };
 };
 
@@ -352,22 +388,10 @@ union q4_soa
     };
 };
 
-struct aabb2
-{
-    v2 Min;
-    v2 Max;
-};
-
 struct aabb2_soa
 {
     v2_soa Min;
     v2_soa Max;
-};
-
-struct aabb2i
-{
-    v2i Min;
-    v2i Max;
 };
 
 struct aabb2i_soa
@@ -376,34 +400,227 @@ struct aabb2i_soa
     v2i_soa Max;
 };
 
-struct aabb3
-{
-    v3 Min;
-    v3 Max;
-};
-
 struct aabb3_soa
 {
     v3_soa Min;
     v3_soa Max;
 };
 
-struct ray_cast
+//
+// NOTE: SIMD
+//
+
+#if MATH_X64
+
+/* NOTE: Headers: https://stackoverflow.com/questions/11228855/header-files-for-x86-simd-intrinsics
+<mmintrin.h>  MMX
+<xmmintrin.h> SSE
+<emmintrin.h> SSE2
+<pmmintrin.h> SSE3
+<tmmintrin.h> SSSE3
+<smmintrin.h> SSE4.1
+<nmmintrin.h> SSE4.2
+<ammintrin.h> SSE4A
+<wmmintrin.h> AES
+<immintrin.h> AVX, AVX2, FMA
+*/
+
+#include <xmmintrin.h>
+// TODO: Remove
+#include <smmintrin.h>
+#include <nmmintrin.h>
+
+#elif MATH_ARM
+
+#include <arm_neon.h>
+
+#endif
+
+struct v1u_x4
 {
-    i16 NumGridsToVisit;
-    i16 CurrX;
-    i16 CurrY;
-    i16 IncX;
-    i16 IncY;
-    f32 t;
-    f32 NextVert;
-    f32 NextHoriz;
-    v2 DeltaRecip;
+    union
+    {
+#if MATH_X64
+        struct
+        {
+            __m128i x;
+        };
+#elif MATH_ARM
+        // TODO: Implement this, rn issues like below
+        //struct
+        //{
+        //    uint32x4_t x;
+        //};
+#endif
+        
+        u32 e[4];
+    };
+
+    inline u32 operator[](u32 Index);
 };
 
-#include "rosemary_math_simd.h"
+union v1i_x4
+{
+#if MATH_X64
+    struct
+    {
+        __m128i x;
+    };
+#elif MATH_ARM
+    // TODO: Implement correctly, there are issues with instructions and documentation sucks so get back to this. Rn everythign is scalar
+    //struct
+    //{
+    //    int32x4_t x;
+    //};
+#endif
+    
+    i32 e[4];
+};
+ 
+union v1_x4
+{
+#if MATH_X64
+    struct
+    {
+        __m128 x;
+    };
+#elif MATH_ARM
+    // TODO: Implement correctly. THere are some instructions not included in header and others that are maybe not there at all. Get back
+    // to this. Rn, everything becomes scalar here
+    
+    //struct
+    //{
+    //    float32x4_t x;
+    //};
+#endif
+    
+    f32 e[4];
+};
 
+union v2_x4
+{
+    struct
+    {
+        v1_x4 x, y;
+    };
+
+    v1_x4 e[2];
+};
+
+union v3_x4
+{
+    struct
+    {
+        v1_x4 x, y, z;
+    };
+
+    struct
+    {
+        v2_x4 xy;
+        v1_x4 Ignored0_;
+    };
+
+    struct
+    {
+        v1_x4 Ignored1_;
+        v2_x4 yz;
+    };
+
+    struct
+    {
+        v1_x4 r, g, b;
+    };
+
+    v1_x4 e[3];
+};
+
+union v4_x4
+{
+    struct
+    {
+        v1_x4 x, y, z, w;
+    };
+
+    struct
+    {
+        v3_x4 xyz;
+        v1_x4 Ignored0_;
+    };
+
+    struct
+    {
+        v2_x4 xy;
+        v2_x4 zw;
+    };
+
+    struct
+    {
+        v1_x4 Ignored1_;
+        v3_x4 yzw;
+    };
+
+    struct
+    {
+        v1_x4 r, g, b, a;
+    };
+
+    struct
+    {
+        v3_x4 rgb;
+        v1_x4 Ignored2_;
+    };
+
+    v1_x4 e[4];
+};
+
+// NOTE: Matrices are stored column order
+struct m2_x4
+{
+    v2_x4 v[2];
+};
+
+// NOTE: Matrices are stored column order
+struct m3_x4
+{
+    v3_x4 v[3];
+};
+
+// NOTE: Matrices are stored column order
+struct m4_x4
+{
+    v4_x4 v[4];
+};
+
+union q4_x4
+{
+    struct
+    {
+        v1_x4 x, y, z, w;
+    };
+    
+    struct
+    {
+        v3_x4 xyz;
+        v1_x4 Ignored0_;
+    };
+};
+
+struct aabb2_x4
+{
+    v2_x4 Min;
+    v2_x4 Max;
+};
+
+struct aabb3_x4
+{
+    v3_x4 Min;
+    v3_x4 Max;
+};
+
+//
 // NOTE: C++ sucks we need to pre declare
+//
+
 inline f32 SquareRoot(f32 A);
 inline f32 Sin(f32 A);
 inline f32 Tan(f32 A);
@@ -500,3 +717,26 @@ inline m3 Transpose(m3 M);
 inline m4 Transpose(m4 M);
 
 inline m4 M4Pos(v3 Pos);
+
+inline v1_x4 SquareRoot(v1_x4 A);
+inline v2_x4 SquareRoot(v2_x4 A);
+inline v3_x4 SquareRoot(v3_x4 A);
+inline v4_x4 SquareRoot(v4_x4 A);
+
+inline v1_x4 Sin(v1_x4 x);
+inline v2_x4 Sin(v2_x4 Angle);
+inline v3_x4 Sin(v3_x4 Angle);
+inline v4_x4 Sin(v4_x4 Angle);
+
+inline v1_x4 Cos(v1_x4 x);
+inline v2_x4 Cos(v2_x4 Angle);
+inline v3_x4 Cos(v3_x4 Angle);
+inline v4_x4 Cos(v4_x4 Angle);
+
+inline v1_x4 LengthSquared(v2_x4 A);
+inline v1_x4 LengthSquared(v3_x4 A);
+inline v1_x4 LengthSquared(v4_x4 A);
+inline v1_x4 LengthSquared(q4_x4 Q);
+
+#include "math_scalar.cpp"
+#include "math_simd.cpp"

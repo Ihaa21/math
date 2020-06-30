@@ -14,7 +14,7 @@
 // NOTE: SSE Helpers
 // =======================================================================================================================================
 
-#if MATH_X86
+#if MATH_X64
 
 #define SSE_SHUFFLE_MASK(a, b, c, d) ((d << 6) | (c << 4) | (b << 2) | (a << 0))
 
@@ -61,7 +61,7 @@
 inline v1u_x4 V1UX4(u32 A)
 {
     v1u_x4 Result = {};
-#if MATH_X86
+#if MATH_X64
     Result.x = _mm_set1_epi32(A);
 #elif MATH_ARM
 
@@ -78,7 +78,7 @@ inline v1u_x4 V1UX4(u32 A)
 inline v1u_x4 V1UX4(void* X)
 {
     v1u_x4 Result = {};
-#if MATH_X86
+#if MATH_X64
     Result.x = _mm_load_si128((__m128i*)X);
 #elif MATH_ARM
     //Result.x = vld1q_u32((u32*)X);
@@ -109,7 +109,7 @@ inline void WriteScalar(v1u_x4* V, u32 Index, u32 Value)
 
 inline void StoreAligned(v1u_x4 V, void* Dest)
 {
-#if MATH_X86
+#if MATH_X64
     _mm_store_si128((__m128i*)Dest, V.x);
 #elif MATH_ARM
     //vst1q_u32((u32*)Dest, V.x);
@@ -143,7 +143,7 @@ inline void StoreScalarAligned(v1u_x4 V, void* Dest, mm Stride, u32 NumStored = 
 inline v1u_x4 operator~(v1u_x4 V)
 {
     v1u_x4 Result = {};
-#if MATH_X86
+#if MATH_X64
     Result.x = _mm_andnot_si128(V.x, _mm_set1_epi32(0xFFFFFFFF));
 #elif MATH_ARM
     //Result.x = vmvnq_u32(V.x);
@@ -162,7 +162,7 @@ inline v1u_x4 operator~(v1u_x4 V)
 inline v1u_x4 operator!=(v1u_x4 V, u32 B)
 {
     v1u_x4 Result = {};
-#if MATH_X86
+#if MATH_X64
     // NOTE: SSE doesn't have a not equal to for ints
     Result.x = _mm_andnot_si128(_mm_cmpeq_epi32(V.x, _mm_set1_epi32(B)), _mm_set1_epi32(0xFFFFFFFF));
 #elif MATH_ARM
@@ -200,7 +200,7 @@ inline u32 v1u_x4::operator[](u32 Index)
 inline v1i_x4 V1IX4(i32* X)
 {
     v1i_x4 Result = {};
-#if MATH_X86
+#if MATH_X64
     Result.x = _mm_load_si128((__m128i*)X);
 #elif MATH_ARM
     //Result.x = vld1q_s32((i32*)X);
@@ -215,7 +215,7 @@ inline v1i_x4 V1IX4(i32* X)
 inline v1i_x4 V1IX4(i32 X)
 {
     v1i_x4 Result = {};
-#if MATH_X86
+#if MATH_X64
     Result.x = _mm_set1_epi32(X);
 #elif MATH_ARM
     //Result.x = vld1q_dup_s32(&X);
@@ -230,7 +230,7 @@ inline v1i_x4 V1IX4(i32 X)
 inline v1i_x4 V1IX4(i32 X, i32 Y, i32 Z, i32 W)
 {
     v1i_x4 Result = {};
-#if MATH_X86
+#if MATH_X64
     Result.x = _mm_set_epi32(W, Z, Y, X);
 #elif MATH_ARM
     // TODO: There is probably a better way to do this, but I can't find the intrinsic
@@ -262,7 +262,7 @@ inline void WriteScalar(v1i_x4* V, u32 Index, i32 Value)
 
 inline void StoreAligned(v1i_x4 V, i32* Dest)
 {
-#if MATH_X86
+#if MATH_X64
     _mm_store_si128((__m128i*)Dest, V.x);
 #elif MATH_ARM
     //vst1q_s32((i32*)Dest, V.x);
@@ -293,7 +293,7 @@ inline void StoreScalarAligned(v1i_x4 V, void* Dest, mm Stride, u32 NumStored = 
 inline v1i_x4 V1IX4Convert(v1_x4 V)
 {
     v1i_x4 Result = {};
-#if MATH_X86
+#if MATH_X64
     Result.x = _mm_cvtps_epi32(V.x);
 #elif MATH_ARM
     //Result.x = vcvtq_s32_f32(V.x);
@@ -308,7 +308,7 @@ inline v1i_x4 V1IX4Convert(v1_x4 V)
 inline v1i_x4 V1IX4Cast(v1_x4 V)
 {
     v1i_x4 Result = {};
-#if MATH_X86
+#if MATH_X64
     Result.x = _mm_castps_si128(V.x);
 #elif MATH_ARM
     //Result.x = vreinterpretq_s32_f32(V.x);
@@ -327,7 +327,7 @@ inline v1i_x4 V1IX4Cast(v1_x4 V)
 inline v1i_x4 operator+(v1i_x4 A, v1i_x4 B)
 {
     v1i_x4 Result = {};
-#if MATH_X86
+#if MATH_X64
     Result.x = _mm_add_epi32(A.x, B.x);
 #elif MATH_ARM
     //Result.x = vaddq_s32(A.x, B.x);
@@ -371,7 +371,7 @@ inline v1i_x4& operator+=(v1i_x4& A, v1i_x4 B)
 inline v1i_x4 operator-(v1i_x4 A, v1i_x4 B)
 {
     v1i_x4 Result = {};
-#if MATH_X86
+#if MATH_X64
     Result.x = _mm_sub_epi32(A.x, B.x);
 #elif MATH_ARM
     //Result.x = vsubq_s32(A.x, B.x);
@@ -424,7 +424,7 @@ inline v1i_x4 operator-(v1i_x4 A)
 inline v1i_x4 operator*(v1i_x4 A, v1i_x4 B)
 {
     v1i_x4 Result = {};
-#if MATH_X86
+#if MATH_X64
     Result.x = _mm_mul_epi32(A.x, B.x);
 #elif MATH_ARM
     //Result.x = vmulq_s32(A.x, B.x);
@@ -468,7 +468,7 @@ inline v1i_x4& operator*=(v1i_x4& A, i32 B)
 inline v1i_x4 operator~(v1i_x4 A)
 {
     v1i_x4 Result = {};
-#if MATH_X86
+#if MATH_X64
     Result.x = _mm_andnot_si128(A.x, _mm_set1_epi32(0xFFFFFFFF));
 #elif MATH_ARM
     Result.e[0] = ~A.e[0];
@@ -486,7 +486,7 @@ inline v1i_x4 operator~(v1i_x4 A)
 inline v1i_x4 operator&(v1i_x4 A, v1i_x4 B)
 {
     v1i_x4 Result = {};
-#if MATH_X86
+#if MATH_X64
     Result.x = _mm_and_si128(A.x, B.x);
 #elif MATH_ARM
     //Result.x = vandq_s32(A.x, B.x);
@@ -530,7 +530,7 @@ inline v1i_x4& operator&=(v1i_x4& A, i32 B)
 inline v1i_x4 operator|(v1i_x4 A, v1i_x4 B)
 {
     v1i_x4 Result = {};
-#if MATH_X86
+#if MATH_X64
     Result.x = _mm_or_si128(A.x, B.x);
 #elif MATH_ARM
     Result.e[0] = A.e[0] | B.e[0];
@@ -573,7 +573,7 @@ inline v1i_x4& operator|=(v1i_x4& A, i32 B)
 inline v1i_x4 operator^(v1i_x4 A, v1i_x4 B)
 {
     v1i_x4 Result = {};
-#if MATH_X86
+#if MATH_X64
     Result.x = _mm_xor_si128(A.x, B.x);
 #elif MATH_ARM
     Result.e[0] = A.e[0] ^ B.e[0];
@@ -616,7 +616,7 @@ inline v1i_x4& operator^=(v1i_x4& A, v1i_x4 B)
 inline v1i_x4 operator<<(v1i_x4 A, v1i_x4 B)
 {
     v1i_x4 Result = {};
-#if MATH_X86
+#if MATH_X64
     Result.x = _mm_sll_epi32(A.x, B.x);
 #elif MATH_ARM
     //Result.x = vshlq_s32(A.x, B.x);
@@ -632,7 +632,7 @@ inline v1i_x4 operator<<(v1i_x4 A, v1i_x4 B)
 inline v1i_x4 operator<<(v1i_x4 A, i32 B)
 {
     v1i_x4 Result = {};
-#if MATH_X86
+#if MATH_X64
     Result.x = _mm_slli_epi32(A.x, B);
 #elif MATH_ARM
     // TODO: There is a shift by integer intrinsic but it needs to be a constant int
@@ -662,7 +662,7 @@ inline v1i_x4& operator<<=(v1i_x4& A, v1i_x4 B)
 inline v1i_x4 operator>>(v1i_x4 A, v1i_x4 B)
 {
     v1i_x4 Result = {};
-#if MATH_X86
+#if MATH_X64
     Result.x = _mm_srl_epi32(A.x, B.x);
 #elif MATH_ARM
     // TODO: Shift right intrinsics seem to be limited, idk why
@@ -679,7 +679,7 @@ inline v1i_x4 operator>>(v1i_x4 A, v1i_x4 B)
 inline v1i_x4 operator>>(v1i_x4 A, i32 B)
 {
     v1i_x4 Result = {};
-#if MATH_X86
+#if MATH_X64
     Result.x = _mm_srli_epi32(A.x, B);
 #elif MATH_ARM
     // TODO: Shift right intrinsics seem to be limited, idk why
@@ -708,7 +708,7 @@ inline v1i_x4& operator>>=(v1i_x4& A, v1i_x4 B)
 inline v1i_x4 operator==(v1i_x4 A, v1i_x4 B)
 {
     v1i_x4 Result = {};
-#if MATH_X86
+#if MATH_X64
     Result.x = _mm_cmpeq_epi32(A.x, B.x);
 #elif MATH_ARM
     //Result.x = vceqq_s32(A.x, B.x);
@@ -744,7 +744,7 @@ inline v1i_x4 operator==(i32 A, v1i_x4 B)
 inline v1_x4 V1X4(f32* X)
 {
     v1_x4 Result = {};
-#if MATH_X86
+#if MATH_X64
     Result.x = _mm_load_ps(X);
 #elif MATH_ARM
     //Result.x = vld1q_f32(X);
@@ -759,7 +759,7 @@ inline v1_x4 V1X4(f32* X)
 inline v1_x4 V1X4(f32 X)
 {
     v1_x4 Result = {};
-#if MATH_X86
+#if MATH_X64
     Result.x = _mm_set1_ps(X);
 #elif MATH_ARM
     //Result.x = vld1q_dup_f32(&X);
@@ -774,7 +774,7 @@ inline v1_x4 V1X4(f32 X)
 inline v1_x4 V1X4(f32 X, f32 Y, f32 Z, f32 W)
 {
     v1_x4 Result = {};
-#if MATH_X86
+#if MATH_X64
     Result.x = _mm_set_ps(W, Z, Y, X);
 #elif MATH_ARM
     // TODO: Is there a intrinsic for this?
@@ -802,7 +802,7 @@ inline void WriteScalar(v1_x4* V, u32 Index, f32 Value)
 
 inline void StoreAligned(v1_x4 V, f32* Dest)
 {
-#if MATH_X86
+#if MATH_X64
     _mm_store_ps(Dest, V.x);
 #elif MATH_ARM
     //vst1q_f32((f32*)Dest, V.x);
@@ -820,7 +820,7 @@ inline void StoreAligned(v1_x4 V, f32* Dest)
 inline v1_x4 V1X4Convert(v1i_x4 V)
 {
     v1_x4 Result = {};
-#if MATH_X86
+#if MATH_X64
     Result.x = _mm_cvtepi32_ps(V.x);
 #elif MATH_ARM
     // TODO: Is there a intrinsic for this?
@@ -835,7 +835,7 @@ inline v1_x4 V1X4Convert(v1i_x4 V)
 inline v1_x4 V1X4Cast(v1i_x4 V)
 {
     v1_x4 Result = {};
-#if MATH_X86
+#if MATH_X64
     Result.x = _mm_castsi128_ps(V.x);
 #elif MATH_ARM
     //Result.x = vreinterpretq_f32_s32(V.x);
@@ -850,7 +850,7 @@ inline v1_x4 V1X4Cast(v1i_x4 V)
 inline v1_x4 V1X4Cast(v1u_x4 V)
 {
     v1_x4 Result = {};
-#if MATH_X86
+#if MATH_X64
     Result.x = _mm_castsi128_ps(V.x);
 #elif MATH_ARM
     //Result.x = vreinterpretq_f32_u32(V.x);
@@ -869,7 +869,7 @@ inline v1_x4 V1X4Cast(v1u_x4 V)
 inline v1_x4 operator+(v1_x4 A, v1_x4 B)
 {
     v1_x4 Result = {};
-#if MATH_X86
+#if MATH_X64
     Result.x = _mm_add_ps(A.x, B.x);
 #elif MATH_ARM
     //Result.x = vaddq_f32(A.x, B.x);
@@ -914,7 +914,7 @@ inline v1_x4& operator+=(v1_x4& A, v1_x4 B)
 inline v1_x4 operator-(v1_x4 A, v1_x4 B)
 {
     v1_x4 Result = {};
-#if MATH_X86
+#if MATH_X64
     Result.x = _mm_sub_ps(A.x, B.x);
 #elif MATH_ARM
     //Result.x = vsubq_f32(A.x, B.x);
@@ -968,7 +968,7 @@ inline v1_x4 operator-(v1_x4 A)
 inline v1_x4 operator*(v1_x4 A, v1_x4 B)
 {
     v1_x4 Result = {};
-#if MATH_X86
+#if MATH_X64
     Result.x = _mm_mul_ps(A.x, B.x);
 #elif MATH_ARM
     //Result.x = vmulq_f32(A.x, B.x);
@@ -1012,7 +1012,7 @@ inline v1_x4& operator*=(v1_x4& A, v1_x4 B)
 inline v1_x4 operator/(v1_x4 A, v1_x4 B)
 {
     v1_x4 Result = {};
-#if MATH_X86
+#if MATH_X64
     Result.x = _mm_div_ps(A.x, B.x);
 #elif MATH_ARM
     //Result.x = vdivq_f32(A.x, B.x);
@@ -1056,7 +1056,7 @@ inline v1_x4& operator/=(v1_x4& A, v1_x4 B)
 inline v1_x4 operator~(v1_x4 A)
 {
     v1_x4 Result = {};
-#if MATH_X86
+#if MATH_X64
     Result.x = _mm_andnot_ps(A.x, _mm_set1_ps(0xFFFFFFFF));
 #elif MATH_ARM
     Result.e[0] = ReinterpretF32(~ReinterpretU32(A.e[0]));
@@ -1074,7 +1074,7 @@ inline v1_x4 operator~(v1_x4 A)
 inline v1_x4 operator&(v1_x4 A, v1_x4 B)
 {
     v1_x4 Result = {};
-#if MATH_X86
+#if MATH_X64
     Result.x = _mm_and_ps(A.x, B.x);
 #elif MATH_ARM
     Result.e[0] = ReinterpretF32(ReinterpretU32(A.e[0]) & ReinterpretU32(B.e[0]));
@@ -1117,7 +1117,7 @@ inline v1_x4& operator&=(v1_x4& A, v1_x4 B)
 inline v1_x4 operator|(v1_x4 A, v1_x4 B)
 {
     v1_x4 Result = {};
-#if MATH_X86
+#if MATH_X64
     Result.x = _mm_or_ps(A.x, B.x);
 #elif MATH_ARM
     Result.e[0] = ReinterpretF32(ReinterpretU32(A.e[0]) | ReinterpretU32(B.e[0]));
@@ -1160,7 +1160,7 @@ inline v1_x4& operator|=(v1_x4& A, v1_x4 B)
 inline v1_x4 operator^(v1_x4 A, v1_x4 B)
 {
     v1_x4 Result = {};
-#if MATH_X86
+#if MATH_X64
     Result.x = _mm_xor_ps(A.x, B.x);
 #elif MATH_ARM
     Result.e[0] = ReinterpretF32(ReinterpretU32(A.e[0]) ^ ReinterpretU32(B.e[0]));
@@ -2365,7 +2365,7 @@ inline void StoreAligned(v4_x4 V, v4_soa Dest, u32 Id)
 
 inline void StoreScalarAligned(v4_x4 V, void* Dest, mm Stride, u32 NumStored = 4)
 {
-#if MATH_X86
+#if MATH_X64
     __m128 OutVec[4];
     SSE_TRANSPOSE(V.x.x, V.y.x, V.z.x, V.w.x, OutVec[0], OutVec[1], OutVec[2], OutVec[3]);
 
@@ -3230,7 +3230,7 @@ inline void StoreAligned(m2_x4 M, m2_soa Dest, u32 Id)
 inline void StoreScalarAligned(m2_x4 M, void* Dest)
 {
     // NOTE: Write out that matrices as scalar elements, instead of concatenated in a group of 4
-#if MATH_X86
+#if MATH_X64
     __m128 r0, r1, r2, r3;
     SSE_TRANSPOSE(M.v[0].x.x, M.v[0].y.x, M.v[1].x.x, M.v[1].y.x, r0, r1, r2, r3);
 
@@ -3601,7 +3601,7 @@ inline void StoreScalarAligned(m4_x4 M, void* Dest, mm Stride, u32 NumStored = 4
      */
     
     // NOTE: Write out that matrices as scalar elements, instead of concatenated in a group of 4
-#if MATH_X86
+#if MATH_X64
     Assert(Stride >= sizeof(__m128)*4);
     __m128 Row0[4], Row1[4], Row2[4], Row3[4];
     SSE_TRANSPOSE(M.v[0].x.x, M.v[0].y.x, M.v[0].z.x, M.v[0].w.x, Row0[0], Row0[1], Row0[2], Row0[3]);
@@ -3826,7 +3826,7 @@ inline void WriteScalar(aabb2_x4* V, u32 Index, aabb2 Value)
 inline v1i_x4 AndNot(v1i_x4 A, v1i_x4 B)
 {
     v1i_x4 Result = {};
-#if MATH_X86
+#if MATH_X64
     Result.x = _mm_andnot_si128(A.x, B.x);
 #elif MATH_ARM
     Result = (~A) & B;
@@ -3837,7 +3837,7 @@ inline v1i_x4 AndNot(v1i_x4 A, v1i_x4 B)
 inline v1_x4 AndNot(v1_x4 A, v1_x4 B)
 {
     v1_x4 Result = {};
-#if MATH_X86
+#if MATH_X64
     Result.x = _mm_andnot_ps(A.x, B.x);
 #elif MATH_ARM
     Result = (~A) & B;
@@ -3953,7 +3953,7 @@ inline v4_x4 Abs(v4_x4 A)
 inline v1_x4 Min(v1_x4 A, v1_x4 B)
 {
     v1_x4 Result = {};
-#if MATH_X86
+#if MATH_X64
     Result.x = _mm_min_ps(A.x, B.x);
 #elif MATH_ARM
     Result.e[0] = Min(A.e[0], B.e[0]);
@@ -3998,7 +3998,7 @@ inline v4_x4 Min(v4_x4 A, v4_x4 B)
 inline v1_x4 Max(v1_x4 A, v1_x4 B)
 {
     v1_x4 Result = {};
-#if MATH_X86
+#if MATH_X64
     Result.x = _mm_max_ps(A.x, B.x);
 #elif MATH_ARM
     Result.e[0] = Max(A.e[0], B.e[0]);
@@ -4044,7 +4044,7 @@ inline v4_x4 Max(v4_x4 A, v4_x4 B)
 inline v1_x4 Floor(v1_x4 A)
 {
     v1_x4 Result = {};
-#if MATH_X86
+#if MATH_X64
     Result.x = _mm_floor_ps(A.x);
 #elif MATH_ARM
     Result.e[0] = FloorF32(A.e[0]);
@@ -4090,7 +4090,7 @@ inline v4_x4 Floor(v4_x4 A)
 inline v1_x4 Ceil(v1_x4 A)
 {
     v1_x4 Result = {};
-#if MATH_X86
+#if MATH_X64
     Result.x = _mm_ceil_ps(A.x);
 #elif MATH_ARM
     Result.e[0] = CeilF32(A.e[0]);
@@ -4173,7 +4173,7 @@ inline v4_x4 Clamp(v4_x4 Val, v4_x4 MinVal, v4_x4 MaxVal)
 inline v1_x4 Round(v1_x4 A)
 {
     v1_x4 Result = {};
-#if MATH_X86
+#if MATH_X64
     Result.x = _mm_round_ps(A.x, _MM_FROUND_TO_NEAREST_INT | _MM_FROUND_NO_EXC);
 #elif MATH_ARM
     Result.e[0] = RoundToF32(A.e[0]);
@@ -4290,7 +4290,7 @@ inline v4_x4 Lerp(v4_x4 Start, v4_x4 End, f32 T)
 inline v1_x4 SquareRoot(v1_x4 A)
 {
     v1_x4 Result = {};
-#if MATH_X86
+#if MATH_X64
     Result.x = _mm_sqrt_ps(A.x);
 #elif MATH_ARM
     Result.e[0] = SquareRoot(A.e[0]);
