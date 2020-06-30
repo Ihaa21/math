@@ -1,11 +1,4 @@
 #if !defined(ROSEMARY_TYPES_H)
-/* ========================================================================
-   $File: $
-   $Date: $
-   $Revision: $
-   $Creator: Ihor Szlachtycz $
-   $Notice: (C) Copyright 2014 by Dream.Inc, Inc. All Rights Reserved. $
-   ======================================================================== */
 
 #include <stdint.h>
 #include <stddef.h>
