@@ -62,6 +62,8 @@ typedef std::atomic<b32> atomic_b32;
 #define global static
 #define local_global static
 
+#ifdef VALIDATION
+
 #if __clang__
 #define Assert(Expression) if (!(Expression)) {__builtin_trap();}
 #else
@@ -69,6 +71,13 @@ typedef std::atomic<b32> atomic_b32;
 #define Assert(Expression) if (!(Expression)) {*(int*)0 = 0;}
 #endif
 #define InvalidCodePath Assert(!"Invalid Code Path")
+
+#else
+
+#define Assert(Expression) (Expression)
+#define InvalidCodePath
+
+#endif
 
 #define ArrayCount(Array) (sizeof(Array) / sizeof((Array)[0]))
 // TODO: Can we get the sizeof the dereferenced value?

@@ -4,6 +4,7 @@
 #include <math.h>
 #include "types.h"
 
+// TODO: SHould be set outside
 #define MATH_X64 1
 //#define MATH_ARM 1
 

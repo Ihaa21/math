@@ -13,6 +13,7 @@
 // NOTE: Init
 //
 
+inline v2 V2(f32 Val) { return { Val, Val }; }
 inline v2 V2(f32 X, f32 Y) { return { X, Y }; }
 inline v2 V2(i32 X, i32 Y) { return { (f32)X, (f32)Y }; }
 inline v2 V2(u32 X, u32 Y) { return { (f32)X, (f32)Y }; }
@@ -74,6 +75,7 @@ inline v2 GetPerp(v2 A)
 // NOTE: v2i
 // =======================================================================================================================================
 
+inline v2i V2i(i32 Val) { return { Val, Val }; }
 inline v2i V2i(i32 X, i32 Y) { return { X, Y }; }
 inline v2i V2i(u32 X, u32 Y) { return { (i32)X, (i32)Y }; }
 inline v2i V2i(f32 X, f32 Y) { return { (i32)X, (i32)Y }; }
@@ -113,6 +115,7 @@ inline v2i operator/(v2i A, v2i B) { return V2i(A.x/B.x, A.y/B.y); }
 // NOTE: v3
 // =======================================================================================================================================
 
+inline v3 V3(f32 Val) { return { Val, Val, Val }; }
 inline v3 V3(f32 X, f32 Y, f32 Z) { return { X, Y, Z }; }
 inline v3 V3(i32 X, i32 Y, i32 Z) { return { (f32)X, (f32)Y, (f32)Z }; }
 inline v3 V3(u32 X, u32 Y, u32 Z) { return { (f32)X, (f32)Y, (f32)Z }; }
@@ -169,6 +172,7 @@ inline v3 GetReflection(v3 Normal, v3 Dir)
 // NOTE: v4
 // =======================================================================================================================================
 
+inline v4 V4(f32 Val) { return { Val, Val, Val, Val }; }
 inline v4 V4(f32 X, f32 Y, f32 Z, f32 W) { return { X, Y, Z, W }; }
 inline v4 V4(i32 X, i32 Y, i32 Z, i32 W) { return { (f32)X, (f32)Y, (f32)Z, (f32)W }; }
 inline v4 V4(u32 X, u32 Y, u32 Z, u32 W) { return { (f32)X, (f32)Y, (f32)Z, (f32)W }; }
@@ -911,13 +915,13 @@ inline f32 MapIntoRange(f32 Val, f32 Min, f32 Max)
     return Result;
 }
 
-inline f32 DegreeToRad(f32 Angle)
+inline f32 DegreeToRadians(f32 Angle)
 {
     f32 Result = Angle*Pi32/180.0f;
     return Result;
 }
 
-inline f32 RadToDegree(f32 Radians)
+inline f32 RadiansToDegree(f32 Radians)
 {
     f32 Result = Radians * 180.0f / Pi32;
     return Result;
@@ -934,14 +938,14 @@ inline b32 IsBetween(f32 Val, f32 A, f32 B)
 // =======================================================================================================================================
 
 // NOTE: Divides functions
-inline b32 Divides(u8 Num, u8 Denom) { u8 IntDiv = Num / Denom; f32 FltDiv = (f32)Num / (f32)Denom; return IntDiv == RoundToU8(FltDiv); }
-inline b32 Divides(u16 Num, u16 Denom) { u16 IntDiv = Num / Denom; f32 FltDiv = (f32)Num / (f32)Denom; return IntDiv == RoundToU16(FltDiv); }
-inline b32 Divides(u32 Num, u32 Denom) { u32 IntDiv = Num / Denom; f32 FltDiv = (f32)Num / (f32)Denom; return IntDiv == RoundToU32(FltDiv); }
-inline b32 Divides(u64 Num, u64 Denom) { u64 IntDiv = Num / Denom; f32 FltDiv = (f32)Num / (f32)Denom; return IntDiv == RoundToU64(FltDiv); }
-inline b32 Divides(i8 Num, i8 Denom) { i8 IntDiv = Num / Denom; f32 FltDiv = (f32)Num / (f32)Denom; return IntDiv == RoundToI8(FltDiv); }
-inline b32 Divides(i16 Num, i16 Denom) { i16 IntDiv = Num / Denom; f32 FltDiv = (f32)Num / (f32)Denom; return IntDiv == RoundToI16(FltDiv); }
-inline b32 Divides(i32 Num, i32 Denom) { i32 IntDiv = Num / Denom; f32 FltDiv = (f32)Num / (f32)Denom; return IntDiv == RoundToI32(FltDiv); }
-inline b32 Divides(i64 Num, i64 Denom) { i64 IntDiv = Num / Denom; f32 FltDiv = (f32)Num / (f32)Denom; return IntDiv == RoundToI64(FltDiv); }
+inline b32 Divides(u8 Num, u8 Denom) { u8 IntDiv = Num / Denom; f32 FltDiv = (f32)Num / (f32)Denom; return f32(IntDiv) == FltDiv; }
+inline b32 Divides(u16 Num, u16 Denom) { u16 IntDiv = Num / Denom; f32 FltDiv = (f32)Num / (f32)Denom; return f32(IntDiv) == FltDiv; }
+inline b32 Divides(u32 Num, u32 Denom) { u32 IntDiv = Num / Denom; f32 FltDiv = (f32)Num / (f32)Denom; return f32(IntDiv) == FltDiv; }
+inline b32 Divides(u64 Num, u64 Denom) { u64 IntDiv = Num / Denom; f64 FltDiv = (f64)Num / (f32)Denom; return f64(IntDiv) == FltDiv; }
+inline b32 Divides(i8 Num, i8 Denom) { i8 IntDiv = Num / Denom; f32 FltDiv = (f32)Num / (f32)Denom; return f32(IntDiv) == FltDiv; }
+inline b32 Divides(i16 Num, i16 Denom) { i16 IntDiv = Num / Denom; f32 FltDiv = (f32)Num / (f32)Denom; return f32(IntDiv) == FltDiv; }
+inline b32 Divides(i32 Num, i32 Denom) { i32 IntDiv = Num / Denom; f32 FltDiv = (f32)Num / (f32)Denom; return f32(IntDiv) == FltDiv; }
+inline b32 Divides(i64 Num, i64 Denom) { i64 IntDiv = Num / Denom; f32 FltDiv = (f32)Num / (f32)Denom; return f32(IntDiv) == FltDiv; }
 
 struct bit_scan_result
 {
