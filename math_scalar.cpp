@@ -457,7 +457,26 @@ inline m4 LookAtM4(v3 Target, v3 Up, v3 Pos)
     Result.v[1].xyz = NewUp;
     Result.v[2].xyz = NewTarget;
     Result.v[3].w = 1.0f;
-    // TODO: Why do we transpose? Does that mean our columns are not axis vectors?
+    Result = Transpose(Result);
+    Result = Result*M4Pos(-Pos);
+    
+    return Result;
+}
+
+inline m4 LookAtM4(v3 View, v3 Up, v3 Right, v3 Pos)
+{
+    // IMPORTANT: We assume the provided vectors form a standard basis
+    Assert(Abs(Dot(View, Right)) <= 0.0001f);
+    Assert(Abs(Dot(Right, Up)) <= 0.0001f);
+    Assert(Abs(Dot(View, Up)) <= 0.0001f);
+    Assert(Abs(Length(View) - 1.0f) <= 0.0001f);
+    Assert(Abs(Length(Up) - 1.0f) <= 0.0001f);
+    Assert(Abs(Length(Right) - 1.0f) <= 0.0001f);
+
+    m4 Result = M4Identity();
+    Result.v[0].xyz = Right;
+    Result.v[1].xyz = Up;
+    Result.v[2].xyz = View;
     Result = Transpose(Result);
     Result = Result*M4Pos(-Pos);
     
@@ -472,6 +491,7 @@ inline m4 PerspProjM4(f32 AspectRatio, f32 Fov, f32 Near, f32 Far)
     Result.v[1].y = -1.0f / Tan(Fov / 2.0f);
     Result.v[2].z = -Far / (Near - Far);
     Result.v[2].w = 1.0f;
+    Result = Transpose(Result);
     Result.v[3].z = Far*Near / (Near - Far);
     
     return Result;

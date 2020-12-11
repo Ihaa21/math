@@ -218,6 +218,18 @@ struct aabb3
     v3 Max;
 };
 
+struct plane
+{
+    v3 Normal;
+    f32 Distance;
+};
+
+struct frustum
+{
+    // NOTE: Left, Right, Top, Bottom
+    plane Planes[4];
+};
+
 struct ray_cast
 {
     i16 NumGridsToVisit;
