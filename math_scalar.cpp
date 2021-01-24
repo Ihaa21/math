@@ -525,9 +525,9 @@ inline aabb2 AabbCenterRadius(v2 Center, v2 Dim) { return { Center - Dim, Center
 // NOTE: aabb2i
 // =======================================================================================================================================
 
-inline aabb2i Aabbi(aabb2 AabbF) { return { V2i(AabbF.Min), V2i(AabbF.Max) }; }
-inline aabb2i AabbiMinMax(v2i Min, v2i Max) { return { Min, Max }; }
-inline aabb2i AabbiCenterRadius(v2i Center, v2i Dim) { return { Center - Dim, Center + Dim }; }
+inline aabb2i Aabb2i(aabb2 AabbF) { return { V2i(AabbF.Min), V2i(AabbF.Max) }; }
+inline aabb2i AabbMinMax(v2i Min, v2i Max) { return { Min, Max }; }
+inline aabb2i AabbCenterRadius(v2i Center, v2i Dim) { return { Center - Dim, Center + Dim }; }
 
 // =======================================================================================================================================
 // NOTE: aabb3
@@ -1387,11 +1387,11 @@ inline m3 InvertYAxis()
 // =======================================================================================================================================
 
 inline aabb2 Enlarge(aabb2 Aabb, v2 AddRadius) { return AabbMinMax(Aabb.Min - AddRadius, Aabb.Max + AddRadius); }
-inline aabb2i Enlarge(aabb2i Aabb, v2i AddRadius) { return AabbiMinMax(Aabb.Min - AddRadius, Aabb.Max + AddRadius); }
+inline aabb2i Enlarge(aabb2i Aabb, v2i AddRadius) { return AabbMinMax(Aabb.Min - AddRadius, Aabb.Max + AddRadius); }
 inline aabb3 Enlarge(aabb3 Aabb, v3 AddRadius) { return AabbMinMax(Aabb.Min - AddRadius, Aabb.Max + AddRadius); }
 
 inline aabb2 Translate(aabb2 Aabb, v2 Displacement) { return AabbMinMax(Aabb.Min + Displacement, Aabb.Max + Displacement); }
-inline aabb2i Translate(aabb2i Aabb, v2i Displacement) { return AabbiMinMax(Aabb.Min + Displacement, Aabb.Max + Displacement); }
+inline aabb2i Translate(aabb2i Aabb, v2i Displacement) { return AabbMinMax(Aabb.Min + Displacement, Aabb.Max + Displacement); }
 inline aabb3 Translate(aabb3 Aabb, v3 Displacement) { return AabbMinMax(Aabb.Min + Displacement, Aabb.Max + Displacement); }
 
 inline v2 AabbGetCenter(aabb2 A) { return Lerp(A.Min, A.Max, 0.5f); }
@@ -1462,7 +1462,7 @@ inline m2 LoadM2(m2_soa Soa, u32 Index) { m2 Result = M2(Soa.e[0][Index], Soa.e[
 inline m3 LoadM3(m3_soa Soa, u32 Index) { m3 Result = M3(Soa.e[0][Index], Soa.e[1][Index], Soa.e[2][Index], Soa.e[3][Index], Soa.e[4][Index], Soa.e[5][Index], Soa.e[6][Index], Soa.e[7][Index], Soa.e[8][Index]); return Result; }
 inline m4 LoadM4(m4_soa Soa, u32 Index) { m4 Result = M4(Soa.e[0][Index], Soa.e[1][Index], Soa.e[2][Index], Soa.e[3][Index], Soa.e[4][Index], Soa.e[5][Index], Soa.e[6][Index], Soa.e[7][Index], Soa.e[8][Index], Soa.e[9][Index], Soa.e[10][Index], Soa.e[11][Index], Soa.e[12][Index], Soa.e[13][Index], Soa.e[14][Index], Soa.e[15][Index]); return Result; }
 inline aabb2 LoadAabb2(aabb2_soa Soa, u32 Index) { aabb2 Result = AabbMinMax(LoadV2(Soa.Min, Index), LoadV2(Soa.Max, Index)); return Result; }
-inline aabb2i LoadAabb2i(aabb2i_soa Soa, u32 Index) { aabb2i Result = AabbiMinMax(LoadV2i(Soa.Min, Index), LoadV2i(Soa.Max, Index)); return Result; }
+inline aabb2i LoadAabb2i(aabb2i_soa Soa, u32 Index) { aabb2i Result = AabbMinMax(LoadV2i(Soa.Min, Index), LoadV2i(Soa.Max, Index)); return Result; }
 inline aabb3 LoadAabb3(aabb3_soa Soa, u32 Index) { aabb3 Result = AabbMinMax(LoadV3(Soa.Min, Index), LoadV3(Soa.Max, Index)); return Result; }
 
 // NOTE: Soa store functions

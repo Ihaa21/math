@@ -24,6 +24,7 @@ typedef uint8_t u8;
 typedef uint16_t u16;
 typedef uint32_t u32;
 typedef uint64_t u64;
+typedef uint64_t uint; // TODO: Choose this based on what we are compiling to, we want this to be native size
 
 typedef std::atomic<u8> atomic_u8;
 typedef std::atomic<u16> atomic_u16;
@@ -53,6 +54,7 @@ typedef std::atomic<iptr> atomic_iptr;
 typedef uint8_t b8;
 typedef uint16_t b16;
 typedef uint32_t b32;
+typedef uint64_t bint;
 
 typedef std::atomic<b8> atomic_b8;
 typedef std::atomic<b16> atomic_b16;
