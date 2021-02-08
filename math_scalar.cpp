@@ -872,10 +872,10 @@ inline v4 RoundToV4(v4 A) { return V4(RoundToF32(A.x), RoundToF32(A.y), RoundToF
 inline i32 Lerp(i32 Start, i32 End, f32 T) { return (i32)((f32)Start*(1.0f - T) + (f32)End*T); }
 inline f32 Lerp(f32 Start, f32 End, f32 T) { return Start*(1.0f - T) + End*T; }
 inline f64 Lerp(f64 Start, f64 End, f64 T) { return Start*(1.0 - T) + End*T; }
-inline v2 Lerp(v2 Start, v2 End, f32 T) { return Start*(V2(1.0f, 1.0f) - T) + End*T; }
-inline v2i Lerp(v2i Start, v2i End, f32 T) { return V2i(Lerp(V2(Start), V2(End), T)); }
-inline v3 Lerp(v3 Start, v3 End, f32 T) { return Start*(V3(1.0f, 1.0f, 1.0f) - T) + End*T; }
-inline v4 Lerp(v4 Start, v4 End, f32 T) { return Start*(V4(1.0f, 1.0f, 1.0f, 1.0f) - T) + End*T; }
+inline v2 Lerp(v2 Start, v2 End, v2 T) { return Start*(V2(1.0f, 1.0f) - T) + End*T; }
+inline v2i Lerp(v2i Start, v2i End, v2 T) { return V2i(Lerp(V2(Start), V2(End), T)); }
+inline v3 Lerp(v3 Start, v3 End, v3 T) { return Start*(V3(1.0f, 1.0f, 1.0f) - T) + End*T; }
+inline v4 Lerp(v4 Start, v4 End, v4 T) { return Start*(V4(1.0f, 1.0f, 1.0f, 1.0f) - T) + End*T; }
 
 // NOTE: Pow functions
 inline f32 Pow(f32 Base, f32 Exp) { return (f32)pow(Base, Exp); }
@@ -1394,9 +1394,9 @@ inline aabb2 Translate(aabb2 Aabb, v2 Displacement) { return AabbMinMax(Aabb.Min
 inline aabb2i Translate(aabb2i Aabb, v2i Displacement) { return AabbMinMax(Aabb.Min + Displacement, Aabb.Max + Displacement); }
 inline aabb3 Translate(aabb3 Aabb, v3 Displacement) { return AabbMinMax(Aabb.Min + Displacement, Aabb.Max + Displacement); }
 
-inline v2 AabbGetCenter(aabb2 A) { return Lerp(A.Min, A.Max, 0.5f); }
-inline v2i AabbGetCenter(aabb2i A) { return Lerp(A.Min, A.Max, 0.5f); }
-inline v3 AabbGetCenter(aabb3 A) { return Lerp(A.Min, A.Max, 0.5f); }
+inline v2 AabbGetCenter(aabb2 A) { return Lerp(A.Min, A.Max, V2(0.5f)); }
+inline v2i AabbGetCenter(aabb2i A) { return Lerp(A.Min, A.Max, V2(0.5f)); }
+inline v3 AabbGetCenter(aabb3 A) { return Lerp(A.Min, A.Max, V3(0.5f)); }
 
 inline v2 AabbGetDim(aabb2 A) { return A.Max - A.Min; }
 inline v2i AabbGetDim(aabb2i A) { return A.Max - A.Min; }
@@ -1485,5 +1485,16 @@ inline q4 Q4FacingDirection(f32 Angle)
     f32 AdjustedAngle = Angle + (1.0f / 2.0f)*Pi32;
     q4 Result = Q4AxisAngle(V3(0, 0, 1), AdjustedAngle);
 
+    return Result;
+}
+
+inline v4 HexToColor(u32 Hex)
+{
+    u8 Alpha = (Hex >> 24) & 0x8;
+    u8 Red = (Hex >> 16) & 0x8;
+    u8 Green = (Hex >> 8) & 0x8;
+    u8 Blue = (Hex >> 0) & 0x8;
+
+    v4 Result = (1.0f / 255.0f) * V4(f32(Red), f32(Green), f32(Blue), f32(Alpha));
     return Result;
 }
