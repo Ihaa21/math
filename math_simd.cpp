@@ -4972,3 +4972,29 @@ inline v3_x4 AabbGetRadius(aabb3_x4 A)
     v3_x4 Result = (A.Max - A.Min) * 0.5f;
     return Result;
 }
+
+// NOTE: Soa load functions
+inline v2 LoadV2(v2_soa Soa, u32 Index) { v2 Result = V2(Soa.x[Index], Soa.y[Index]); return Result; }
+inline v2i LoadV2i(v2i_soa Soa, u32 Index) { v2i Result = V2i(Soa.x[Index], Soa.y[Index]); return Result; }
+inline v3 LoadV3(v3_soa Soa, u32 Index) { v3 Result = V3(Soa.x[Index], Soa.y[Index], Soa.z[Index]); return Result; }
+inline v4 LoadV4(v4_soa Soa, u32 Index) { v4 Result = V4(Soa.x[Index], Soa.y[Index], Soa.z[Index], Soa.w[Index]); return Result; }
+inline q4 LoadQ4(q4_soa Soa, u32 Index) { q4 Result = Q4(Soa.x[Index], Soa.y[Index], Soa.z[Index], Soa.w[Index]); return Result; }
+inline m2 LoadM2(m2_soa Soa, u32 Index) { m2 Result = M2(Soa.e[0][Index], Soa.e[1][Index], Soa.e[2][Index], Soa.e[3][Index]); return Result; }
+inline m3 LoadM3(m3_soa Soa, u32 Index) { m3 Result = M3(Soa.e[0][Index], Soa.e[1][Index], Soa.e[2][Index], Soa.e[3][Index], Soa.e[4][Index], Soa.e[5][Index], Soa.e[6][Index], Soa.e[7][Index], Soa.e[8][Index]); return Result; }
+inline m4 LoadM4(m4_soa Soa, u32 Index) { m4 Result = M4(Soa.e[0][Index], Soa.e[1][Index], Soa.e[2][Index], Soa.e[3][Index], Soa.e[4][Index], Soa.e[5][Index], Soa.e[6][Index], Soa.e[7][Index], Soa.e[8][Index], Soa.e[9][Index], Soa.e[10][Index], Soa.e[11][Index], Soa.e[12][Index], Soa.e[13][Index], Soa.e[14][Index], Soa.e[15][Index]); return Result; }
+inline aabb2 LoadAabb2(aabb2_soa Soa, u32 Index) { aabb2 Result = AabbMinMax(LoadV2(Soa.Min, Index), LoadV2(Soa.Max, Index)); return Result; }
+inline aabb2i LoadAabb2i(aabb2i_soa Soa, u32 Index) { aabb2i Result = AabbMinMax(LoadV2i(Soa.Min, Index), LoadV2i(Soa.Max, Index)); return Result; }
+inline aabb3 LoadAabb3(aabb3_soa Soa, u32 Index) { aabb3 Result = AabbMinMax(LoadV3(Soa.Min, Index), LoadV3(Soa.Max, Index)); return Result; }
+
+// NOTE: Soa store functions
+inline void StoreV2(v2_soa Soa, u32 Index, v2 A) { Soa.x[Index] = A.x; Soa.y[Index] = A.y; }
+inline void StoreV2i(v2i_soa Soa, u32 Index, v2i A) { Soa.x[Index] = A.x; Soa.y[Index] = A.y; }
+inline void StoreV3(v3_soa Soa, u32 Index, v3 A) { Soa.x[Index] = A.x; Soa.y[Index] = A.y; Soa.z[Index] = A.z; }
+inline void StoreV4(v4_soa Soa, u32 Index, v4 A) { Soa.x[Index] = A.x; Soa.y[Index] = A.y; Soa.z[Index] = A.z; Soa.w[Index] = A.w; }
+inline void StoreQ4(q4_soa Soa, u32 Index, q4 A) { Soa.x[Index] = A.x; Soa.y[Index] = A.y; Soa.z[Index] = A.z; Soa.w[Index] = A.w; }
+inline void StoreM2(m2_soa Soa, u32 Index, m2 A) { StoreV2(Soa.v[0], Index, A.v[0]); StoreV2(Soa.v[1], Index, A.v[1]); }
+inline void StoreM3(m3_soa Soa, u32 Index, m3 A) { StoreV3(Soa.v[0], Index, A.v[0]); StoreV3(Soa.v[1], Index, A.v[1]); StoreV3(Soa.v[2], Index, A.v[2]); }
+inline void StoreM4(m4_soa Soa, u32 Index, m4 A) { StoreV4(Soa.v[0], Index, A.v[0]); StoreV4(Soa.v[1], Index, A.v[1]); StoreV4(Soa.v[2], Index, A.v[2]); StoreV4(Soa.v[3], Index, A.v[3]); }
+inline void StoreAabb2(aabb2_soa Soa, u32 Index, aabb2 A) { StoreV2(Soa.Min, Index, A.Min); StoreV2(Soa.Max, Index, A.Max); }
+inline void StoreAabb2i(aabb2i_soa Soa, u32 Index, aabb2i A) { StoreV2i(Soa.Min, Index, A.Min); StoreV2i(Soa.Max, Index, A.Max); }
+inline void StoreAabb3(aabb3_soa Soa, u32 Index, aabb3 A) { StoreV3(Soa.Min, Index, A.Min); StoreV3(Soa.Max, Index, A.Max); }

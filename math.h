@@ -751,5 +751,12 @@ inline v1_x4 LengthSquared(v3_x4 A);
 inline v1_x4 LengthSquared(v4_x4 A);
 inline v1_x4 LengthSquared(q4_x4 Q);
 
+// TODO: Should I use macros and if so, probably remove the function copies I already have?
+// NOTE: Square
+#define Square(a) ((a)*(a))
+
+#include "math_vector.cpp"
+#include "math_matrix.cpp"
 #include "math_scalar.cpp"
+#include "math_geometry.cpp"
 #include "math_simd.cpp"
