@@ -91,6 +91,7 @@ inline i64 Min(i64 A, i64 B) { return A > B ? B : A; }
 inline f32 Min(f32 A, f32 B) { return A > B ? B : A; }
 inline f64 Min(f64 A, f64 B) { return A > B ? B : A; }
 inline v2 Min(v2 A, v2 B) { return V2(Min(A.x, B.x), Min(A.y, B.y)); }
+inline v2i Min(v2i A, v2i B) { return V2i(Min(A.x, B.x), Min(A.y, B.y)); }
 inline v3 Min(v3 A, v3 B) { return V3(Min(A.x, B.x), Min(A.y, B.y), Min(A.z, B.z)); }
 inline v4 Min(v4 A, v4 B) { return V4(Min(A.x, B.x), Min(A.y, B.y), Min(A.z, B.z), Min(A.w, B.w)); }
 
@@ -106,6 +107,7 @@ inline i64 Max(i64 A, i64 B) { return A > B ? A : B; }
 inline f32 Max(f32 A, f32 B) { return A > B ? A : B; }
 inline f64 Max(f64 A, f64 B) { return A > B ? A : B; }
 inline v2 Max(v2 A, v2 B) { return V2(Max(A.x, B.x), Max(A.y, B.y)); }
+inline v2i Max(v2i A, v2i B) { return V2i(Max(A.x, B.x), Max(A.y, B.y)); }
 inline v3 Max(v3 A, v3 B) { return V3(Max(A.x, B.x), Max(A.y, B.y), Max(A.z, B.z)); }
 inline v4 Max(v4 A, v4 B) { return V4(Max(A.x, B.x), Max(A.y, B.y), Max(A.z, B.z), Max(A.w, B.w)); }
 
@@ -167,6 +169,7 @@ inline i64 Clamp(i64 Val, i64 MinVal, i64 MaxVal) { return Min(MaxVal, Max(MinVa
 inline f32 Clamp(f32 Val, f32 MinVal, f32 MaxVal) { return Min(MaxVal, Max(MinVal, Val)); }
 inline f64 Clamp(f64 Val, f64 MinVal, f64 MaxVal) { return Min(MaxVal, Max(MinVal, Val)); }
 inline v2 Clamp(v2 Val, v2 MinVal, v2 MaxVal) { return Min(MaxVal, Max(MinVal, Val)); }
+inline v2i Clamp(v2i Val, v2i MinVal, v2i MaxVal) { return Min(MaxVal, Max(MinVal, Val)); }
 inline v3 Clamp(v3 Val, v3 MinVal, v3 MaxVal) { return Min(MaxVal, Max(MinVal, Val)); }
 inline v4 Clamp(v4 Val, v4 MinVal, v4 MaxVal) { return Min(MaxVal, Max(MinVal, Val)); }
 
@@ -216,41 +219,167 @@ inline f32 SquareRoot(f32 A)
     return Result;
 }
 
+//
+// NOTE: Transcadental Functions
+//
+
+// NOTE: Sin
 inline f32 Sin(f32 A)
 {
     f32 Result = sinf(A);
     return Result;
 }
 
+inline v2 Sin(v2 A)
+{
+    v2 Result = V2(Sin(A.x), Sin(A.y));
+    return Result;
+}
+
+inline v3 Sin(v3 A)
+{
+    v3 Result = V3(Sin(A.x), Sin(A.y), Sin(A.z));
+    return Result;
+}
+
+inline v4 Sin(v4 A)
+{
+    v4 Result = V4(Sin(A.x), Sin(A.y), Sin(A.z), Sin(A.w));
+    return Result;
+}
+
+// NOTE: Tan
 inline f32 Tan(f32 A)
 {
     f32 Result = tanf(A);
     return Result;
 }
 
+inline v2 Tan(v2 A)
+{
+    v2 Result = V2(Tan(A.x), Tan(A.y));
+    return Result;
+}
+
+inline v3 Tan(v3 A)
+{
+    v3 Result = V3(Tan(A.x), Tan(A.y), Tan(A.z));
+    return Result;
+}
+
+inline v4 Tan(v4 A)
+{
+    v4 Result = V4(Tan(A.x), Tan(A.y), Tan(A.z), Tan(A.w));
+    return Result;
+}
+
+// NOTE: ArcSin
 inline f32 ArcSin(f32 A)
 {
     f32 Result = asinf(A);
     return Result;
 }
 
+inline v2 ArcSin(v2 A)
+{
+    v2 Result = V2(ArcSin(A.x), ArcSin(A.y));
+    return Result;
+}
+
+inline v3 ArcSin(v3 A)
+{
+    v3 Result = V3(ArcSin(A.x), ArcSin(A.y), ArcSin(A.z));
+    return Result;
+}
+
+inline v4 ArcSin(v4 A)
+{
+    v4 Result = V4(ArcSin(A.x), ArcSin(A.y), ArcSin(A.z), ArcSin(A.w));
+    return Result;
+}
+
+// NOTE: Cos
 inline f32 Cos(f32 A)
 {
     f32 Result = cosf(A);
     return Result;
 }
 
+inline v2 Cos(v2 A)
+{
+    v2 Result = V2(Cos(A.x), Cos(A.y));
+    return Result;
+}
+
+inline v3 Cos(v3 A)
+{
+    v3 Result = V3(Cos(A.x), Cos(A.y), Cos(A.z));
+    return Result;
+}
+
+inline v4 Cos(v4 A)
+{
+    v4 Result = V4(Cos(A.x), Cos(A.y), Cos(A.z), Cos(A.w));
+    return Result;
+}
+
+// NOTE: ArcCos
 inline f32 ArcCos(f32 A)
 {
     f32 Result = acosf(A);
     return Result;
 }
 
+inline v2 ArcCos(v2 A)
+{
+    v2 Result = V2(ArcCos(A.x), ArcCos(A.y));
+    return Result;
+}
+
+inline v3 ArcCos(v3 A)
+{
+    v3 Result = V3(ArcCos(A.x), ArcCos(A.y), ArcCos(A.z));
+    return Result;
+}
+
+inline v4 ArcCos(v4 A)
+{
+    v4 Result = V4(ArcCos(A.x), ArcCos(A.y), ArcCos(A.z), ArcCos(A.w));
+    return Result;
+}
+
+// NOTE: ArcTan
 inline f32 ArcTan(f32 X, f32 Y)
 {
     f32 Result = atan2f(Y, X);
     return Result;
 }
+
+// NOTE: Exp
+inline f32 Exp(f32 A)
+{
+    f32 Result = expf(A);
+    return Result;
+}
+
+inline v2 Exp(v2 A)
+{
+    v2 Result = V2(Exp(A.x), Exp(A.y));
+    return Result;
+}
+
+inline v3 Exp(v3 A)
+{
+    v3 Result = V3(Exp(A.x), Exp(A.y), Exp(A.z));
+    return Result;
+}
+
+inline v4 Exp(v4 A)
+{
+    v4 Result = V4(Exp(A.x), Exp(A.y), Exp(A.z), Exp(A.w));
+    return Result;
+}
+
 
 inline f32 MapIntoRange(f32 Val, f32 Min, f32 Max)
 {
