@@ -15,10 +15,14 @@ typedef std::atomic<i16> atomic_i16;
 typedef std::atomic<i32> atomic_i32;
 typedef std::atomic<i64> atomic_i64;
 
+#define I8_MIN -127
+#define I8_MAX 127
 #define I16_MIN -32768
 #define I16_MAX 32767
-#define I32_MIN INT_MIN
-#define I32_MAX INT_MAX
+#define I32_MIN -2147483647
+#define I32_MAX 2147483647
+#define I64_MIN -9223372036854775807
+#define I64_MAX 9223372036854775807
 
 typedef uint8_t u8;
 typedef uint16_t u16;
@@ -31,7 +35,14 @@ typedef std::atomic<u16> atomic_u16;
 typedef std::atomic<u32> atomic_u32;
 typedef std::atomic<u64> atomic_u64;
 
+#define U8_MIN 0
+#define U8_MAX 0xFF
+#define U16_MIN 0
+#define U16_MAX 0xFFFF
+#define U32_MIN 0
 #define U32_MAX 0xFFFFFFFF
+#define U64_MIN 0
+#define U64_MAX 0xFFFFFFFFFFFFFFFF
 
 typedef float f32;
 typedef double f64;
