@@ -7,6 +7,9 @@
    
  */
 
+#if 0
+
+// TODO: Add gather/scatter for all the classes
 // TODO: Add all comparison operators
 // TODO: Add operator[] ops
 
@@ -52,57 +55,6 @@
 // NOTE: v1u_x4 Simd
 // =======================================================================================================================================
 
-// TODO: A lot of this is really just a signed integer, so we have some implicit conversions happening here
-
-//
-// NOTE: Init
-//
-
-inline v1u_x4 V1UX4(u32 A)
-{
-    v1u_x4 Result = {};
-#if MATH_X64
-    Result.x = _mm_set1_epi32(A);
-#elif MATH_ARM
-
-    Result.e[0] = A;
-    Result.e[1] = A;
-    Result.e[2] = A;
-    Result.e[3] = A;
-    
-    //Result.x = vld1q_dup_u32(&A);
-#endif
-    return Result;
-}
-
-inline v1u_x4 V1UX4(void* X)
-{
-    v1u_x4 Result = {};
-#if MATH_X64
-    Result.x = _mm_load_si128((__m128i*)X);
-#elif MATH_ARM
-    //Result.x = vld1q_u32((u32*)X);
-
-    u32* CurrPtr = (u32*)X;
-    Result.e[0] = CurrPtr[0];
-    Result.e[1] = CurrPtr[1];
-    Result.e[2] = CurrPtr[2];
-    Result.e[3] = CurrPtr[3];
-    
-#endif
-    return Result;
-}
-
-//
-// NOTE: Scalar Writes
-//
-
-inline void WriteScalar(v1u_x4* V, u32 Index, u32 Value)
-{
-    Assert(Index < 4);
-    V->e[Index] = Value;
-}
-
 //
 // NOTE: Store
 //
@@ -121,38 +73,6 @@ inline void StoreAligned(v1u_x4 V, void* Dest)
     CurrPtr[3] = V.e[3];
     
 #endif
-}
-
-inline void StoreScalarAligned(v1u_x4 V, void* Dest, mm Stride, u32 NumStored = 4)
-{
-    // NOTE: We don't have scatter ops so we have to convert registers here
-    u8* CurrPtr = (u8*)Dest;
-
-    for (u32 ElementId = 0; ElementId < NumStored; ++ElementId)
-    {
-        u32* WritePtr = (u32*)CurrPtr;
-        WritePtr[0] = V.e[ElementId];
-        CurrPtr += Stride;
-    }
-}
-
-//
-// NOTE: Not
-//
-
-inline v1u_x4 operator~(v1u_x4 V)
-{
-    v1u_x4 Result = {};
-#if MATH_X64
-    Result.x = _mm_andnot_si128(V.x, _mm_set1_epi32(0xFFFFFFFF));
-#elif MATH_ARM
-    //Result.x = vmvnq_u32(V.x);
-    Result.e[0] = ~V.e[0];
-    Result.e[1] = ~V.e[1];
-    Result.e[2] = ~V.e[2];
-    Result.e[3] = ~V.e[3];
-#endif
-    return Result;
 }
 
 //
@@ -192,379 +112,6 @@ inline u32 v1u_x4::operator[](u32 Index)
 // =======================================================================================================================================
 // NOTE: v1i_x4 Simd
 // =======================================================================================================================================
-
-//
-// NOTE: Init
-//
-
-inline v1i_x4 V1IX4(i32* X)
-{
-    v1i_x4 Result = {};
-#if MATH_X64
-    Result.x = _mm_load_si128((__m128i*)X);
-#elif MATH_ARM
-    //Result.x = vld1q_s32((i32*)X);
-    Result.e[0] = X[0];
-    Result.e[1] = X[1];
-    Result.e[2] = X[2];
-    Result.e[3] = X[3];
-#endif
-    return Result;
-}
-
-inline v1i_x4 V1IX4(i32 X)
-{
-    v1i_x4 Result = {};
-#if MATH_X64
-    Result.x = _mm_set1_epi32(X);
-#elif MATH_ARM
-    //Result.x = vld1q_dup_s32(&X);
-    Result.e[0] = X;
-    Result.e[1] = X;
-    Result.e[2] = X;
-    Result.e[3] = X;
-#endif
-    return Result;
-}
-
-inline v1i_x4 V1IX4(i32 X, i32 Y, i32 Z, i32 W)
-{
-    v1i_x4 Result = {};
-#if MATH_X64
-    Result.x = _mm_set_epi32(W, Z, Y, X);
-#elif MATH_ARM
-    // TODO: There is probably a better way to do this, but I can't find the intrinsic
-    //i32 Temp[4] = { X, Y, Z, W };
-    //Result = V1IX4(Temp);
-
-    Result.e[0] = X;
-    Result.e[1] = Y;
-    Result.e[2] = Z;
-    Result.e[3] = W;
-    
-#endif
-    return Result;
-}
-
-//
-// NOTE: Scalar Writes
-//
-
-inline void WriteScalar(v1i_x4* V, u32 Index, i32 Value)
-{
-    Assert(Index < 4);
-    V->e[Index] = Value;
-}
-
-//
-// NOTE: Store
-//
-
-inline void StoreAligned(v1i_x4 V, i32* Dest)
-{
-#if MATH_X64
-    _mm_store_si128((__m128i*)Dest, V.x);
-#elif MATH_ARM
-    //vst1q_s32((i32*)Dest, V.x);
-    Dest[0] = V.e[0];
-    Dest[1] = V.e[1];
-    Dest[2] = V.e[2];
-    Dest[3] = V.e[3];    
-#endif
-}
-
-inline void StoreScalarAligned(v1i_x4 V, void* Dest, mm Stride, u32 NumStored = 4)
-{
-    // NOTE: We don't have scatter ops so we have to convert registers here
-    u8* CurrPtr = (u8*)Dest;
-
-    for (u32 ElementId = 0; ElementId < NumStored; ++ElementId)
-    {
-        i32* WritePtr = (i32*)CurrPtr;
-        WritePtr[0] = V.e[ElementId];
-        CurrPtr += Stride;
-    }
-}
-
-//
-// NOTE: Conversions
-//
-
-inline v1i_x4 V1IX4Convert(v1_x4 V)
-{
-    v1i_x4 Result = {};
-#if MATH_X64
-    Result.x = _mm_cvtps_epi32(V.x);
-#elif MATH_ARM
-    //Result.x = vcvtq_s32_f32(V.x);
-    Result.e[0] = i32(V.e[0]);
-    Result.e[1] = i32(V.e[1]);
-    Result.e[2] = i32(V.e[2]);
-    Result.e[3] = i32(V.e[3]);    
-#endif
-    return Result;
-}
-
-inline v1i_x4 V1IX4Cast(v1_x4 V)
-{
-    v1i_x4 Result = {};
-#if MATH_X64
-    Result.x = _mm_castps_si128(V.x);
-#elif MATH_ARM
-    //Result.x = vreinterpretq_s32_f32(V.x);
-    Result.e[0] = ReinterpretI32(V.e[0]);
-    Result.e[1] = ReinterpretI32(V.e[1]);
-    Result.e[2] = ReinterpretI32(V.e[2]);
-    Result.e[3] = ReinterpretI32(V.e[3]);    
-#endif
-    return Result;
-}
-
-//
-// NOTE: Add
-//
-
-inline v1i_x4 operator+(v1i_x4 A, v1i_x4 B)
-{
-    v1i_x4 Result = {};
-#if MATH_X64
-    Result.x = _mm_add_epi32(A.x, B.x);
-#elif MATH_ARM
-    //Result.x = vaddq_s32(A.x, B.x);
-    Result.e[0] = A.e[0] + B.e[0];
-    Result.e[1] = A.e[1] + B.e[1];
-    Result.e[2] = A.e[2] + B.e[2];
-    Result.e[3] = A.e[3] + B.e[3];
-#endif
-
-    return Result;
-}
-
-inline v1i_x4 operator+(v1i_x4 A, i32 B)
-{
-    v1i_x4 Result = A + V1IX4(B);
-    return Result;
-}
-
-inline v1i_x4 operator+(i32 A, v1i_x4 B)
-{
-    v1i_x4 Result = V1IX4(A) + B;
-    return Result;
-}
-
-inline v1i_x4& operator+=(v1i_x4& A, i32 B)
-{
-    A = A + B;
-    return A;
-}
-
-inline v1i_x4& operator+=(v1i_x4& A, v1i_x4 B)
-{
-    A = A + B;
-    return A;
-}
-
-//
-// NOTE: Sub
-//
-
-inline v1i_x4 operator-(v1i_x4 A, v1i_x4 B)
-{
-    v1i_x4 Result = {};
-#if MATH_X64
-    Result.x = _mm_sub_epi32(A.x, B.x);
-#elif MATH_ARM
-    //Result.x = vsubq_s32(A.x, B.x);
-    Result.e[0] = A.e[0] - B.e[0];
-    Result.e[1] = A.e[1] - B.e[1];
-    Result.e[2] = A.e[2] - B.e[2];
-    Result.e[3] = A.e[3] - B.e[3];
-#endif
-    return Result;
-}
-
-inline v1i_x4 operator-(v1i_x4 A, i32 B)
-{
-    v1i_x4 Result = A - V1IX4(B);
-    return Result;
-}
-
-inline v1i_x4 operator-(i32 A, v1i_x4 B)
-{
-    v1i_x4 Result = V1IX4(A) - B;
-    return Result;
-}
-
-inline v1i_x4& operator-=(v1i_x4& A, i32 B)
-{
-    A = A - B;
-    return A;
-}
-
-inline v1i_x4& operator-=(v1i_x4& A, v1i_x4 B)
-{
-    A = A - B;
-    return A;
-}
-
-//
-// NOTE: Negation
-//
-
-inline v1i_x4 operator-(v1i_x4 A)
-{
-    v1i_x4 Result = 0 - A;
-    return Result;
-}
-
-//
-// NOTE: Mul
-//
-
-inline v1i_x4 operator*(v1i_x4 A, v1i_x4 B)
-{
-    v1i_x4 Result = {};
-#if MATH_X64
-    Result.x = _mm_mul_epi32(A.x, B.x);
-#elif MATH_ARM
-    //Result.x = vmulq_s32(A.x, B.x);
-    Result.e[0] = A.e[0] * B.e[0];
-    Result.e[1] = A.e[1] * B.e[1];
-    Result.e[2] = A.e[2] * B.e[2];
-    Result.e[3] = A.e[3] * B.e[3];
-#endif
-
-    return Result;
-}
-
-inline v1i_x4 operator*(v1i_x4 A, i32 B)
-{
-    v1i_x4 Result = A * V1IX4(B);
-    return Result;
-}
-
-inline v1i_x4 operator*(i32 A, v1i_x4 B)
-{
-    v1i_x4 Result = V1IX4(A) * B;
-    return Result;
-}
-
-inline v1i_x4& operator*=(v1i_x4& A, v1i_x4 B)
-{
-    A = A * B;
-    return A;
-}
-
-inline v1i_x4& operator*=(v1i_x4& A, i32 B)
-{
-    A = A * B;
-    return A;
-}
-
-//
-// NOTE: Not
-//
-
-inline v1i_x4 operator~(v1i_x4 A)
-{
-    v1i_x4 Result = {};
-#if MATH_X64
-    Result.x = _mm_andnot_si128(A.x, _mm_set1_epi32(0xFFFFFFFF));
-#elif MATH_ARM
-    Result.e[0] = ~A.e[0];
-    Result.e[1] = ~A.e[1];
-    Result.e[2] = ~A.e[2];
-    Result.e[3] = ~A.e[3];
-#endif
-    return Result;
-}
-
-//
-// NOTE: And
-//
-
-inline v1i_x4 operator&(v1i_x4 A, v1i_x4 B)
-{
-    v1i_x4 Result = {};
-#if MATH_X64
-    Result.x = _mm_and_si128(A.x, B.x);
-#elif MATH_ARM
-    //Result.x = vandq_s32(A.x, B.x);
-    Result.e[0] = A.e[0] & B.e[0];
-    Result.e[1] = A.e[1] & B.e[1];
-    Result.e[2] = A.e[2] & B.e[2];
-    Result.e[3] = A.e[3] & B.e[3];
-#endif
-
-    return Result;
-}
-
-inline v1i_x4 operator&(v1i_x4 A, i32 B)
-{
-    v1i_x4 Result = A & V1IX4(B);
-    return Result;
-}
-
-inline v1i_x4 operator&(i32 A, v1i_x4 B)
-{
-    v1i_x4 Result = V1IX4(A) & B;
-    return Result;
-}
-
-inline v1i_x4& operator&=(v1i_x4& A, v1i_x4 B)
-{
-    A = A & B;
-    return A;
-}
-
-inline v1i_x4& operator&=(v1i_x4& A, i32 B)
-{
-    A = A & B;
-    return A;
-}
-
-//
-// NOTE: Or
-//
-
-inline v1i_x4 operator|(v1i_x4 A, v1i_x4 B)
-{
-    v1i_x4 Result = {};
-#if MATH_X64
-    Result.x = _mm_or_si128(A.x, B.x);
-#elif MATH_ARM
-    Result.e[0] = A.e[0] | B.e[0];
-    Result.e[1] = A.e[1] | B.e[1];
-    Result.e[2] = A.e[2] | B.e[2];
-    Result.e[3] = A.e[3] | B.e[3];    
-#endif
-
-    return Result;
-}
-
-inline v1i_x4 operator|(v1i_x4 A, i32 B)
-{
-    v1i_x4 Result = A | V1IX4(B);    
-    return Result;
-}
-
-inline v1i_x4 operator|(i32 A, v1i_x4 B)
-{
-    v1i_x4 Result = V1IX4(A) | B;    
-    return Result;
-}
-
-inline v1i_x4& operator|=(v1i_x4& A, v1i_x4 B)
-{
-    A = A | B;
-    return A;
-}
-
-inline v1i_x4& operator|=(v1i_x4& A, i32 B)
-{
-    A = A | B;
-    return A;
-}
 
 //
 // NOTE: Xor
@@ -738,99 +285,8 @@ inline v1i_x4 operator==(i32 A, v1i_x4 B)
 // =======================================================================================================================================
 
 //
-// NOTE: Init
-//
-
-inline v1_x4 V1X4(f32* X)
-{
-    v1_x4 Result = {};
-#if MATH_X64
-    Result.x = _mm_load_ps(X);
-#elif MATH_ARM
-    //Result.x = vld1q_f32(X);
-    Result.e[0] = X[0];
-    Result.e[1] = X[1];
-    Result.e[2] = X[2];
-    Result.e[3] = X[3];
-#endif
-    return Result;
-}
-
-inline v1_x4 V1X4(f32 X)
-{
-    v1_x4 Result = {};
-#if MATH_X64
-    Result.x = _mm_set1_ps(X);
-#elif MATH_ARM
-    //Result.x = vld1q_dup_f32(&X);
-    Result.e[0] = X;
-    Result.e[1] = X;
-    Result.e[2] = X;
-    Result.e[3] = X;
-#endif
-    return Result;
-}
-
-inline v1_x4 V1X4(f32 X, f32 Y, f32 Z, f32 W)
-{
-    v1_x4 Result = {};
-#if MATH_X64
-    Result.x = _mm_set_ps(W, Z, Y, X);
-#elif MATH_ARM
-    // TODO: Is there a intrinsic for this?
-    Result.e[0] = X;
-    Result.e[1] = Y;
-    Result.e[2] = Z;
-    Result.e[3] = W;
-#endif
-    return Result;
-}
-
-//
-// NOTE: Scalar Writes
-//
-
-inline void WriteScalar(v1_x4* V, u32 Index, f32 Value)
-{
-    Assert(Index < 4);
-    V->e[Index] = Value;
-}
-
-//
-// NOTE: Store
-//
-
-inline void StoreAligned(v1_x4 V, f32* Dest)
-{
-#if MATH_X64
-    _mm_store_ps(Dest, V.x);
-#elif MATH_ARM
-    //vst1q_f32((f32*)Dest, V.x);
-    Dest[0] = V.e[0];
-    Dest[1] = V.e[1];
-    Dest[2] = V.e[2];
-    Dest[3] = V.e[3];
-#endif
-}
-
-//
 // NOTE: Conversions
 //
-
-inline v1_x4 V1X4Convert(v1i_x4 V)
-{
-    v1_x4 Result = {};
-#if MATH_X64
-    Result.x = _mm_cvtepi32_ps(V.x);
-#elif MATH_ARM
-    // TODO: Is there a intrinsic for this?
-    Result.e[0] = f32(V.e[0]);
-    Result.e[1] = f32(V.e[1]);
-    Result.e[2] = f32(V.e[2]);
-    Result.e[3] = f32(V.e[3]);
-#endif
-    return Result;
-}
 
 inline v1_x4 V1X4Cast(v1i_x4 V)
 {
@@ -866,188 +322,21 @@ inline v1_x4 V1X4Cast(v1u_x4 V)
 // NOTE: Add
 //
 
-inline v1_x4 operator+(v1_x4 A, v1_x4 B)
-{
-    v1_x4 Result = {};
-#if MATH_X64
-    Result.x = _mm_add_ps(A.x, B.x);
-#elif MATH_ARM
-    //Result.x = vaddq_f32(A.x, B.x);
-    Result.e[0] = A.e[0] + B.e[0];
-    Result.e[1] = A.e[1] + B.e[1];
-    Result.e[2] = A.e[2] + B.e[2];
-    Result.e[3] = A.e[3] + B.e[3];
-#endif
-    
-    return Result;
-}
-
-inline v1_x4 operator+(v1_x4 A, f32 B)
-{
-    v1_x4 Result = A + V1X4(B);
-    
-    return Result;
-}
-
-inline v1_x4 operator+(f32 A, v1_x4 B)
-{
-    v1_x4 Result = V1X4(A) + B;
-    return Result;
-}
-
-inline v1_x4& operator+=(v1_x4& A, f32 B)
-{
-    A = A + B;
-    return A;
-}
-
-inline v1_x4& operator+=(v1_x4& A, v1_x4 B)
-{
-    A = A + B;
-    return A;
-}
-
 //
 // NOTE: Sub
 //
-
-inline v1_x4 operator-(v1_x4 A, v1_x4 B)
-{
-    v1_x4 Result = {};
-#if MATH_X64
-    Result.x = _mm_sub_ps(A.x, B.x);
-#elif MATH_ARM
-    //Result.x = vsubq_f32(A.x, B.x);
-    Result.e[0] = A.e[0] - B.e[0];
-    Result.e[1] = A.e[1] - B.e[1];
-    Result.e[2] = A.e[2] - B.e[2];
-    Result.e[3] = A.e[3] - B.e[3];
-#endif
-    
-    return Result;
-}
-
-inline v1_x4 operator-(v1_x4 A, f32 B)
-{
-    v1_x4 Result = A - V1X4(B);
-    return Result;
-}
-
-inline v1_x4 operator-(f32 A, v1_x4 B)
-{
-    v1_x4 Result = V1X4(A) - B;
-    return Result;
-}
-
-inline v1_x4& operator-=(v1_x4& A, f32 B)
-{
-    A = A - B;
-    return A;
-}
-
-inline v1_x4& operator-=(v1_x4& A, v1_x4 B)
-{
-    A = A - B;
-    return A;
-}
 
 //
 // NOTE: Negation
 //
 
-inline v1_x4 operator-(v1_x4 A)
-{
-    v1_x4 Result = 0 - A;    
-    return Result;
-}
-
 //
 // NOTE: Mul
 //
 
-inline v1_x4 operator*(v1_x4 A, v1_x4 B)
-{
-    v1_x4 Result = {};
-#if MATH_X64
-    Result.x = _mm_mul_ps(A.x, B.x);
-#elif MATH_ARM
-    //Result.x = vmulq_f32(A.x, B.x);
-    Result.e[0] = A.e[0] * B.e[0];
-    Result.e[1] = A.e[1] * B.e[1];
-    Result.e[2] = A.e[2] * B.e[2];
-    Result.e[3] = A.e[3] * B.e[3];
-#endif
-    
-    return Result;
-}
-
-inline v1_x4 operator*(v1_x4 A, f32 B)
-{
-    v1_x4 Result = A * V1X4(B);    
-    return Result;
-}
-
-inline v1_x4 operator*(f32 A, v1_x4 B)
-{
-    v1_x4 Result = V1X4(A) * B;    
-    return Result;
-}
-
-inline v1_x4& operator*=(v1_x4& A, f32 B)
-{
-    A = A * B;
-    return A;
-}
-
-inline v1_x4& operator*=(v1_x4& A, v1_x4 B)
-{
-    A = A * B;
-    return A;
-}
-
 //
 // NOTE: Div
 //
-
-inline v1_x4 operator/(v1_x4 A, v1_x4 B)
-{
-    v1_x4 Result = {};
-#if MATH_X64
-    Result.x = _mm_div_ps(A.x, B.x);
-#elif MATH_ARM
-    //Result.x = vdivq_f32(A.x, B.x);
-    Result.e[0] = A.e[0] / B.e[0];
-    Result.e[1] = A.e[1] / B.e[1];
-    Result.e[2] = A.e[2] / B.e[2];
-    Result.e[3] = A.e[3] / B.e[3];
-#endif
-    
-    return Result;
-}
-
-inline v1_x4 operator/(v1_x4 A, f32 B)
-{
-    v1_x4 Result = A / V1X4(B);    
-    return Result;
-}
-
-inline v1_x4 operator/(f32 A, v1_x4 B)
-{
-    v1_x4 Result = V1X4(A) / B;    
-    return Result;
-}
-
-inline v1_x4& operator/=(v1_x4& A, f32 B)
-{
-    A = A / B;
-    return A;
-}
-
-inline v1_x4& operator/=(v1_x4& A, v1_x4 B)
-{
-    A = A / B;
-    return A;
-}
 
 //
 // NOTE: Not
@@ -1065,49 +354,6 @@ inline v1_x4 operator~(v1_x4 A)
     Result.e[3] = ReinterpretF32(~ReinterpretU32(A.e[3]));
 #endif
     return Result;
-}
-
-//
-// NOTE: And
-//
-
-inline v1_x4 operator&(v1_x4 A, v1_x4 B)
-{
-    v1_x4 Result = {};
-#if MATH_X64
-    Result.x = _mm_and_ps(A.x, B.x);
-#elif MATH_ARM
-    Result.e[0] = ReinterpretF32(ReinterpretU32(A.e[0]) & ReinterpretU32(B.e[0]));
-    Result.e[1] = ReinterpretF32(ReinterpretU32(A.e[1]) & ReinterpretU32(B.e[1]));
-    Result.e[2] = ReinterpretF32(ReinterpretU32(A.e[2]) & ReinterpretU32(B.e[2]));
-    Result.e[3] = ReinterpretF32(ReinterpretU32(A.e[3]) & ReinterpretU32(B.e[3]));
-#endif
-
-    return Result;
-}
-
-inline v1_x4 operator&(v1_x4 A, f32 B)
-{
-    v1_x4 Result = A & V1X4(B);    
-    return Result;
-}
-
-inline v1_x4 operator&(f32 A, v1_x4 B)
-{
-    v1_x4 Result = V1X4(A) & B;    
-    return Result;
-}
-
-inline v1_x4& operator&=(v1_x4& A, f32 B)
-{
-    A = A & B;
-    return A;
-}
-
-inline v1_x4& operator&=(v1_x4& A, v1_x4 B)
-{
-    A = A & B;
-    return A;
 }
 
 //
@@ -1218,48 +464,6 @@ inline v1_x4 MaskedWrite(v1_x4 A, v1_x4 B, v1u_x4 Mask)
 // =======================================================================================================================================
 
 //
-// NOTE: Init
-//
-
-inline v2_x4 V2X4(f32* X, f32* Y)
-{
-    v2_x4 Result = {};
-    Result.x = V1X4(X);
-    Result.y = V1X4(Y);
-    return Result;
-}
-
-inline v2_x4 V2X4(f32 X, f32 Y)
-{
-    v2_x4 Result = {};
-    Result.x = V1X4(X);
-    Result.y = V1X4(Y);
-    return Result;
-}
-
-inline v2_x4 V2X4(v2 V)
-{
-    v2_x4 Result = {};
-    Result.x = V1X4(V.x);
-    Result.y = V1X4(V.y);
-    return Result;
-}
-
-inline v2_x4 V2X4(v1_x4 X, v1_x4 Y)
-{
-    v2_x4 Result = {};
-    Result.x = X;
-    Result.y = Y;
-    return Result;
-}
-
-inline v2_x4 V2X4(v2_soa V, u32 Id)
-{
-    v2_x4 Result = V2X4(V.x + Id, V.y + Id);
-    return Result;
-}
-
-//
 // NOTE: Scalar Writes
 //
 
@@ -1284,281 +488,6 @@ inline void StoreAligned(v2_x4 V, v2_soa Dest, u32 Id)
     Assert((Id % 4) == 0);
     StoreAligned(V.x, Dest.x + Id);
     StoreAligned(V.y, Dest.y + Id);
-}
-
-//
-// NOTE: Add
-//
-
-inline v2_x4 operator+(v2_x4 A, v2_x4 B)
-{
-    v2_x4 Result = {};
-    Result.x = A.x + B.x;
-    Result.y = A.y + B.y;
-    
-    return Result;
-}
-
-inline v2_x4 operator+(v2_x4 A, f32 B)
-{
-    v2_x4 Result = A + V2X4(B, B);
-    return Result;
-}
-
-inline v2_x4 operator+(f32 A, v2_x4 B)
-{
-    v2_x4 Result = V2X4(A, A) + B;
-    return Result;
-}
-
-inline v2_x4& operator+=(v2_x4& A, f32 B)
-{
-    A = A + B;
-    return A;
-}
-
-inline v2_x4& operator+=(v2_x4& A, v2_x4 B)
-{
-    A = A + B;
-    return A;
-}
-
-//
-// NOTE: Sub
-//
-
-inline v2_x4 operator-(v2_x4 A, v2_x4 B)
-{
-    v2_x4 Result = {};
-    Result.x = A.x - B.x;
-    Result.y = A.y - B.y;
-    
-    return Result;
-}
-
-inline v2_x4 operator-(v2_x4 A, f32 B)
-{
-    v2_x4 Result = A - V2X4(B, B);
-    return Result;
-}
-
-inline v2_x4 operator-(f32 A, v2_x4 B)
-{
-    v2_x4 Result = V2X4(A, A) - B;
-    return Result;
-}
-
-inline v2_x4 operator-(v2 A, v2_x4 B)
-{
-    v2_x4 Result = V2X4(A) - B;
-    return Result;
-}
-
-inline v2_x4 operator-(v2_x4 A, v2 B)
-{
-    v2_x4 Result = A - V2X4(B);
-    return Result;
-}
-
-inline v2_x4& operator-=(v2_x4& A, f32 B)
-{
-    A = A - B;
-    return A;
-}
-
-inline v2_x4& operator-=(v2_x4& A, v2 B)
-{
-    A = A - B;
-    return A;
-}
-
-inline v2_x4& operator-=(v2_x4& A, v2_x4 B)
-{
-    A = A - B;
-    return A;
-}
-
-//
-// NOTE: Negation
-//
-
-inline v2_x4 operator-(v2_x4 A)
-{
-    v2_x4 Result = V2X4(0.0f, 0.0f) - A;
-    return Result;
-}
-
-//
-// NOTE: Mul
-//
-
-inline v2_x4 operator*(v2_x4 A, f32 B)
-{
-    v2_x4 Result = {};
-    Result.x = A.x * B;
-    Result.y = A.y * B;
-    
-    return Result;
-}
-
-inline v2_x4 operator*(f32 A, v2_x4 B)
-{
-    v2_x4 Result = {};
-    Result.x = A * B.x;
-    Result.y = A * B.y;
-    
-    return Result;
-}
-
-inline v2_x4& operator*=(v2_x4& A, f32 B)
-{
-    A = A * B;
-    return A;
-}
-
-inline v2_x4 operator*(v2_x4 A, v2 B)
-{
-    v2_x4 Result = {};
-    Result.x = A.x * B.x;
-    Result.y = A.y * B.y;
-    
-    return Result;
-}
-
-inline v2_x4 operator*(v2 A, v2_x4 B)
-{
-    v2_x4 Result = {};
-    Result.x = A.x * B.x;
-    Result.y = A.y * B.y;
-    
-    return Result;
-}
-
-inline v2_x4& operator*=(v2_x4& A, v2 B)
-{
-    A = A * B;
-    return A;
-}
-
-inline v2_x4 operator*(v2_x4 A, v1_x4 B)
-{
-    v2_x4 Result = {};
-    Result.x = A.x * B;
-    Result.y = A.y * B;
-    
-    return Result;
-}
-
-inline v2_x4& operator*=(v2_x4& A, v1_x4 B)
-{
-    A = A * B;
-    return A;
-}
-
-inline v2_x4 operator*(v1_x4 B, v2_x4 A)
-{
-    v2_x4 Result = {};
-    Result.x = A.x * B;
-    Result.y = A.y * B;
-    
-    return Result;
-}
-
-inline v2_x4 operator*(v2_x4 A, v2_x4 B)
-{
-    v2_x4 Result = {};
-    Result.x = A.x * B.x;
-    Result.y = A.y * B.y;
-    
-    return Result;
-}
-
-inline v2_x4& operator*=(v2_x4& A, v2_x4 B)
-{
-    A = A * B;
-    return A;
-}
-
-//
-// NOTE: Div
-//
-
-inline v2_x4 operator/(v2_x4 A, f32 B)
-{
-    v2_x4 Result = {};
-    Result.x = A.x / B;
-    Result.y = A.y / B;
-    
-    return Result;
-}
-
-inline v2_x4 operator/(f32 A, v2_x4 B)
-{
-    v2_x4 Result = {};
-    Result.x = A / B.x;
-    Result.y = A / B.y;
-    
-    return Result;
-}
-
-inline v2_x4& operator/=(v2_x4& A, f32 B)
-{
-    A = A / B;
-    return A;
-}
-
-inline v2_x4 operator/(v2_x4 A, v2 B)
-{
-    v2_x4 Result = {};
-    Result.x = A.x / B.x;
-    Result.y = A.y / B.y;
-    
-    return Result;
-}
-
-inline v2_x4 operator/(v2 A, v2_x4 B)
-{
-    v2_x4 Result = {};
-    Result.x = A.x / B.x;
-    Result.y = A.y / B.y;
-    
-    return Result;
-}
-
-inline v2_x4& operator/=(v2_x4& A, v2 B)
-{
-    A = A / B;
-    return A;
-}
-
-inline v2_x4 operator/(v2_x4 A, v1_x4 B)
-{
-    v2_x4 Result = {};
-    Result.x = A.x / B;
-    Result.y = A.y / B;
-    
-    return Result;
-}
-
-inline v2_x4& operator/=(v2_x4& A, v1_x4 B)
-{
-    A = A / B;
-    return A;
-}
-
-inline v2_x4 operator/(v2_x4 A, v2_x4 B)
-{
-    v2_x4 Result = {};
-    Result.x = A.x / B.x;
-    Result.y = A.y / B.y;
-    
-    return Result;
-}
-
-inline v2_x4& operator/=(v2_x4& A, v2_x4 B)
-{
-    A = A / B;
-    return A;
 }
 
 //
@@ -3950,20 +2879,6 @@ inline v4_x4 Abs(v4_x4 A)
 // NOTE: Min
 //
 
-inline v1_x4 Min(v1_x4 A, v1_x4 B)
-{
-    v1_x4 Result = {};
-#if MATH_X64
-    Result.x = _mm_min_ps(A.x, B.x);
-#elif MATH_ARM
-    Result.e[0] = Min(A.e[0], B.e[0]);
-    Result.e[1] = Min(A.e[1], B.e[1]);
-    Result.e[2] = Min(A.e[2], B.e[2]);
-    Result.e[3] = Min(A.e[3], B.e[3]);
-#endif
-    return Result;
-}
-
 inline v2_x4 Min(v2_x4 A, v2_x4 B)
 {
     v2_x4 Result = {};
@@ -3995,20 +2910,6 @@ inline v4_x4 Min(v4_x4 A, v4_x4 B)
 // NOTE: Max
 //
 
-inline v1_x4 Max(v1_x4 A, v1_x4 B)
-{
-    v1_x4 Result = {};
-#if MATH_X64
-    Result.x = _mm_max_ps(A.x, B.x);
-#elif MATH_ARM
-    Result.e[0] = Max(A.e[0], B.e[0]);
-    Result.e[1] = Max(A.e[1], B.e[1]);
-    Result.e[2] = Max(A.e[2], B.e[2]);
-    Result.e[3] = Max(A.e[3], B.e[3]);
-#endif
-    return Result;
-}
-
 inline v2_x4 Max(v2_x4 A, v2_x4 B)
 {
     v2_x4 Result = {};
@@ -4039,29 +2940,6 @@ inline v4_x4 Max(v4_x4 A, v4_x4 B)
 //
 // NOTE: Floor
 //
-
-// TODO: This is SSE4.1
-inline v1_x4 Floor(v1_x4 A)
-{
-    v1_x4 Result = {};
-#if MATH_X64
-    Result.x = _mm_floor_ps(A.x);
-#elif MATH_ARM
-    Result.e[0] = FloorF32(A.e[0]);
-    Result.e[1] = FloorF32(A.e[1]);
-    Result.e[2] = FloorF32(A.e[2]);
-    Result.e[3] = FloorF32(A.e[3]);
-#endif
-    return Result;
-}
-
-inline v2_x4 Floor(v2_x4 A)
-{
-    v2_x4 Result = {};
-    Result.x = Floor(A.x);
-    Result.y = Floor(A.y);
-    return Result;
-}
 
 inline v3_x4 Floor(v3_x4 A)
 {
@@ -4131,20 +3009,6 @@ inline v4_x4 Ceil(v4_x4 A)
 //
 // NOTE: Clamp
 //
-
-inline v1_x4 Clamp(v1_x4 Val, v1_x4 MinVal, v1_x4 MaxVal)
-{
-    v1_x4 Result = Min(MaxVal, Max(MinVal, Val));
-    return Result;
-}
-
-inline v2_x4 Clamp(v2_x4 Val, v2_x4 MinVal, v2_x4 MaxVal)
-{
-    v2_x4 Result = {};
-    Result.x = Clamp(Val.x, MinVal.x, MaxVal.x);
-    Result.y = Clamp(Val.y, MinVal.y, MaxVal.y);
-    return Result;
-}
 
 inline v3_x4 Clamp(v3_x4 Val, v3_x4 MinVal, v3_x4 MaxVal)
 {
@@ -4286,28 +3150,6 @@ inline v4_x4 Lerp(v4_x4 Start, v4_x4 End, f32 T)
 //
 // NOTE: Square Root
 //
-
-inline v1_x4 SquareRoot(v1_x4 A)
-{
-    v1_x4 Result = {};
-#if MATH_X64
-    Result.x = _mm_sqrt_ps(A.x);
-#elif MATH_ARM
-    Result.e[0] = SquareRoot(A.e[0]);
-    Result.e[1] = SquareRoot(A.e[1]);
-    Result.e[2] = SquareRoot(A.e[2]);
-    Result.e[3] = SquareRoot(A.e[3]);
-#endif
-    return Result;
-}
-
-inline v2_x4 SquareRoot(v2_x4 A)
-{
-    v2_x4 Result = {};
-    Result.x = SquareRoot(A.x);
-    Result.y = SquareRoot(A.y);
-    return Result;
-}
 
 inline v3_x4 SquareRoot(v3_x4 A)
 {
@@ -4577,12 +3419,6 @@ inline v4_x4 Cos(v4_x4 Angle)
 // NOTE: Length Squared
 //
 
-inline v1_x4 LengthSquared(v2_x4 A)
-{
-    v1_x4 Result = Square(A.x) + Square(A.y);
-    return Result;
-}
-
 inline v1_x4 LengthSquared(v3_x4 A)
 {
     v1_x4 Result = Square(A.x) + Square(A.y) + Square(A.z);
@@ -4605,12 +3441,6 @@ inline v1_x4 LengthSquared(q4_x4 Q)
 // NOTE: Length
 //
 
-inline v1_x4 Length(v2_x4 A)
-{
-    v1_x4 Result = SquareRoot(LengthSquared(A));
-    return Result;
-}
-
 inline v1_x4 Length(v3_x4 A)
 {
     v1_x4 Result = SquareRoot(LengthSquared(A));
@@ -4632,20 +3462,6 @@ inline v1_x4 Length(q4_x4 Q)
 //
 // NOTE: Normalize
 //
-
-inline v2_x4 Normalize(v2_x4 A)
-{
-    v1_x4 VecLength = Length(A);
-
-    f32* Scalars = VecLength.e;
-    Assert(Scalars[0] != 0.0f);
-    Assert(Scalars[1] != 0.0f);
-    Assert(Scalars[2] != 0.0f);
-    Assert(Scalars[3] != 0.0f);
-
-    v2_x4 Result = A / VecLength;
-    return Result;
-}
 
 inline v3_x4 Normalize(v3_x4 A)
 {
@@ -4998,3 +3814,5 @@ inline void StoreM4(m4_soa Soa, u32 Index, m4 A) { StoreV4(Soa.v[0], Index, A.v[
 inline void StoreAabb2(aabb2_soa Soa, u32 Index, aabb2 A) { StoreV2(Soa.Min, Index, A.Min); StoreV2(Soa.Max, Index, A.Max); }
 inline void StoreAabb2i(aabb2i_soa Soa, u32 Index, aabb2i A) { StoreV2i(Soa.Min, Index, A.Min); StoreV2i(Soa.Max, Index, A.Max); }
 inline void StoreAabb3(aabb3_soa Soa, u32 Index, aabb3 A) { StoreV3(Soa.Min, Index, A.Min); StoreV3(Soa.Max, Index, A.Max); }
+
+#endif

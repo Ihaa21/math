@@ -5,8 +5,9 @@
 #include "types.h"
 
 // TODO: SHould be set outside
-#define MATH_X64 1
-//#define MATH_ARM 1
+#define MATH_SIMD_X64 1
+//#define MATH_SIMD_ARM 1
+//#define MATH_SIMD_TEST 1
 
 //
 // NOTE: Constants
@@ -420,217 +421,6 @@ struct aabb3_soa
 };
 
 //
-// NOTE: SIMD
-//
-
-#if MATH_X64
-
-/* NOTE: Headers: https://stackoverflow.com/questions/11228855/header-files-for-x86-simd-intrinsics
-<mmintrin.h>  MMX
-<xmmintrin.h> SSE
-<emmintrin.h> SSE2
-<pmmintrin.h> SSE3
-<tmmintrin.h> SSSE3
-<smmintrin.h> SSE4.1
-<nmmintrin.h> SSE4.2
-<ammintrin.h> SSE4A
-<wmmintrin.h> AES
-<immintrin.h> AVX, AVX2, FMA
-*/
-
-#include <xmmintrin.h>
-// TODO: Remove
-#include <smmintrin.h>
-#include <nmmintrin.h>
-
-#elif MATH_ARM
-
-#include <arm_neon.h>
-
-#endif
-
-struct v1u_x4
-{
-    union
-    {
-#if MATH_X64
-        struct
-        {
-            __m128i x;
-        };
-#elif MATH_ARM
-        // TODO: Implement this, rn issues like below
-        //struct
-        //{
-        //    uint32x4_t x;
-        //};
-#endif
-        
-        u32 e[4];
-    };
-
-    inline u32 operator[](u32 Index);
-};
-
-union v1i_x4
-{
-#if MATH_X64
-    struct
-    {
-        __m128i x;
-    };
-#elif MATH_ARM
-    // TODO: Implement correctly, there are issues with instructions and documentation sucks so get back to this. Rn everythign is scalar
-    //struct
-    //{
-    //    int32x4_t x;
-    //};
-#endif
-    
-    i32 e[4];
-};
- 
-union v1_x4
-{
-#if MATH_X64
-    struct
-    {
-        __m128 x;
-    };
-#elif MATH_ARM
-    // TODO: Implement correctly. THere are some instructions not included in header and others that are maybe not there at all. Get back
-    // to this. Rn, everything becomes scalar here
-    
-    //struct
-    //{
-    //    float32x4_t x;
-    //};
-#endif
-    
-    f32 e[4];
-};
-
-union v2_x4
-{
-    struct
-    {
-        v1_x4 x, y;
-    };
-
-    v1_x4 e[2];
-};
-
-union v3_x4
-{
-    struct
-    {
-        v1_x4 x, y, z;
-    };
-
-    struct
-    {
-        v2_x4 xy;
-        v1_x4 Ignored0_;
-    };
-
-    struct
-    {
-        v1_x4 Ignored1_;
-        v2_x4 yz;
-    };
-
-    struct
-    {
-        v1_x4 r, g, b;
-    };
-
-    v1_x4 e[3];
-};
-
-union v4_x4
-{
-    struct
-    {
-        v1_x4 x, y, z, w;
-    };
-
-    struct
-    {
-        v3_x4 xyz;
-        v1_x4 Ignored0_;
-    };
-
-    struct
-    {
-        v2_x4 xy;
-        v2_x4 zw;
-    };
-
-    struct
-    {
-        v1_x4 Ignored1_;
-        v3_x4 yzw;
-    };
-
-    struct
-    {
-        v1_x4 r, g, b, a;
-    };
-
-    struct
-    {
-        v3_x4 rgb;
-        v1_x4 Ignored2_;
-    };
-
-    v1_x4 e[4];
-};
-
-// NOTE: Matrices are stored column order
-struct m2_x4
-{
-    v2_x4 v[2];
-};
-
-// NOTE: Matrices are stored column order
-struct m3_x4
-{
-    v3_x4 v[3];
-};
-
-// NOTE: Matrices are stored column order
-struct m4_x4
-{
-    v4_x4 v[4];
-};
-
-union q4_x4
-{
-    struct
-    {
-        v1_x4 x, y, z, w;
-    };
-    
-    struct
-    {
-        v3_x4 xyz;
-        v1_x4 Ignored0_;
-    };
-};
-
-struct aabb2_x4
-{
-    v2_x4 Min;
-    v2_x4 Max;
-};
-
-struct aabb3_x4
-{
-    v3_x4 Min;
-    v3_x4 Max;
-};
-
-//
 // NOTE: C++ sucks we need to pre declare
 //
 
@@ -731,26 +521,6 @@ inline m4 Transpose(m4 M);
 
 inline m4 M4Pos(v3 Pos);
 
-inline v1_x4 SquareRoot(v1_x4 A);
-inline v2_x4 SquareRoot(v2_x4 A);
-inline v3_x4 SquareRoot(v3_x4 A);
-inline v4_x4 SquareRoot(v4_x4 A);
-
-inline v1_x4 Sin(v1_x4 x);
-inline v2_x4 Sin(v2_x4 Angle);
-inline v3_x4 Sin(v3_x4 Angle);
-inline v4_x4 Sin(v4_x4 Angle);
-
-inline v1_x4 Cos(v1_x4 x);
-inline v2_x4 Cos(v2_x4 Angle);
-inline v3_x4 Cos(v3_x4 Angle);
-inline v4_x4 Cos(v4_x4 Angle);
-
-inline v1_x4 LengthSquared(v2_x4 A);
-inline v1_x4 LengthSquared(v3_x4 A);
-inline v1_x4 LengthSquared(v4_x4 A);
-inline v1_x4 LengthSquared(q4_x4 Q);
-
 // TODO: Should I use macros and if so, probably remove the function copies I already have?
 // NOTE: Square
 #define Square(a) ((a)*(a))
@@ -759,4 +529,7 @@ inline v1_x4 LengthSquared(q4_x4 Q);
 #include "math_matrix.cpp"
 #include "math_scalar.cpp"
 #include "math_geometry.cpp"
-#include "math_simd.cpp"
+#include "math_simd_scalar.h"
+#include "math_simd_scalar.cpp"
+#include "math_simd_vector.h"
+#include "math_simd_vector.cpp"
