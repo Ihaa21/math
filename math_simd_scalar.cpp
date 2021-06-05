@@ -1,4 +1,18 @@
+/*
 
+  NOTE: For init ops, we can convert between all other scalar types
+
+  TODO:
+
+    - v1u is pretty bugged and untested for large uints. SSE only provides signed ops most of the time so things like comparisons might not
+      work as expected. Use the following references:
+
+        - https://fgiesen.wordpress.com/2016/04/03/sse-mind-the-gap/
+        - https://stackoverflow.com/questions/54022478/efficient-sse-fp-floor-ceil-round-rounding-functions-without-sse
+        - https://github.com/p12tic/libsimdpp
+        - https://stackoverflow.com/questions/8598942/how-do-i-convert-m128i-to-an-unsigned-int-with-sse
+  
+ */
 
 // =======================================================================================================================================
 // NOTE: v1u_x4 Simd
@@ -43,6 +57,45 @@ inline v1u_x4 V1UX4(u32 X, u32 Y, u32 Z, u32 W)
     
     return Result;
 }
+
+#if 0
+// TODO: Implement correctly
+inline v1u_x4 V1UX4(v1i_x4 V)
+{
+    v1u_x4 Result = {};
+    
+#if MATH_SIMD_X64
+    Result.x = V.x;
+#elif MATH_SIMD_ARM
+    InvalidCodePath;
+#elif MATH_SIMD_TEST
+    Result.e[0] = V.e[0];
+    Result.e[1] = V.e[1];
+    Result.e[2] = V.e[2];
+    Result.e[3] = V.e[3];    
+#endif
+    
+    return Result;
+}
+
+inline v1u_x4 V1UX4(v1_x4 V)
+{
+    v1u_x4 Result = {};
+    
+#if MATH_SIMD_X64
+    Result.x = _mm_cvtps_epi32(V.x);
+#elif MATH_SIMD_ARM
+    InvalidCodePath;
+#elif MATH_SIMD_TEST
+    Result.e[0] = V.e[0];
+    Result.e[1] = V.e[1];
+    Result.e[2] = V.e[2];
+    Result.e[3] = V.e[3];    
+#endif
+    
+    return Result;
+}
+#endif
 
 //
 // NOTE: Memory Ops
@@ -202,6 +255,27 @@ inline v1i_x4 V1IX4(i32 X, i32 Y, i32 Z, i32 W)
     
     return Result;
 }
+
+#if 0
+// TODO: Implement correctly
+inline v1i_x4 V1IX4(v1u_x4 V)
+{
+    v1i_x4 Result = {};
+
+#if MATH_SIMD_X64
+    Result.x = V.x;
+#elif MATH_SIMD_ARM
+    Result.x = vcvtq_s32_f32(V.x);
+#elif MATH_SIMD_TEST
+    Result.e[0] = i32(V.e[0]);
+    Result.e[1] = i32(V.e[1]);
+    Result.e[2] = i32(V.e[2]);
+    Result.e[3] = i32(V.e[3]);    
+#endif
+    
+    return Result;
+}
+#endif
 
 inline v1i_x4 V1IX4(v1_x4 V)
 {
