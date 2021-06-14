@@ -57,6 +57,43 @@ inline f32 Intersect(p3 Plane, v3 Start, v3 Dir)
 }
 
 // =======================================================================================================================================
+// NOTE: Lines (Infinite)
+// =======================================================================================================================================
+
+inline b32 LinesIntersect(v2 Start0, v2 Dir0, v2 Start1, v2 Dir1, v2* OutIntersection)
+{
+    b32 Result = false;
+    f32 Epsilon = 1.0f / 1024.0f;
+    
+    // NOTE: Convert to slope intercept form
+    f32 Slope1 = Abs(Dir0.x) < Epsilon ? NAN : (Dir0.y / Dir0.x);
+    f32 Slope2 = Abs(Dir1.x) < Epsilon ? NAN : (Dir1.y / Dir1.x);
+    
+    // NOTE: Check for parallel lines
+    if (!(Abs(Slope1 - Slope2) < Epsilon))
+    {
+        Result = true;
+        if (IsNan(Slope1) && !IsNan(Slope2))
+        {
+            OutIntersection->x = Start0.x;
+            OutIntersection->y = (Start0.x - Start1.x) * Slope2 + Start1.y;
+        }
+        else if (!IsNan(Slope1) && IsNan(Slope2))
+        {
+            OutIntersection->x = Start1.x;
+            OutIntersection->y = (Start1.x - Start0.x) * Slope1 + Start1.y;
+        }
+        else
+        {
+            OutIntersection->x = (Slope1 * Start0.x - Slope2 * Start1.x + Start1.y - Start0.y) / (Slope1 - Slope2);
+            OutIntersection->y = Slope2 * (OutIntersection->x - Start1.x) + Start1.y;
+        }
+    }
+    
+    return Result;
+}
+
+// =======================================================================================================================================
 // NOTE: RayCast
 // =======================================================================================================================================
 
